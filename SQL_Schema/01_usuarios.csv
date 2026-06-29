@@ -1,0 +1,2 @@
+id,email,password_hash,nombre,is_temporary,activo,created_at,updated_at
+1,jivillar@uaa.com.ar,$2b$10$abcdefghijklmnopqrstuvwxyz,Juan Ignacio Villar,0,1,2026-06-24,2026-06-24

@@ -1,0 +1,33 @@
+{
+  "name": "club-uaa-campanas-electron",
+  "version": "0.1.0",
+  "description": "Electron campaign manager for Club UAA",
+  "main": "./dist/main/main.js",
+  "homepage": "./",
+  "author": "Club UAA",
+  "license": "MIT",
+  "scripts": {
+    "vite": "vite --port 3000",
+    "tsc": "tsc src/main/**/*.ts --outDir dist --module commonjs",
+    "electron": "electron .",
+    "build": "tsc && vite build",
+    "pack": "electron-builder --dir",
+    "dist": "npm run build && electron-builder"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tedious": "^16.7.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.11",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1",
+    "esbuild": "^0.23.1",
+    "typescript": "^5.9.3"
+  }
+}

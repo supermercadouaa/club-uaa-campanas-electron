@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Campañas Club UAA</title>
+  <link rel="icon" type="image/png" href="logo.png">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+:root {
+  --primary: #5A3E7F;
+  --primary-light: #6F52A0;
+  --primary-lighter: #8464B8;
+  --bg: #2D1B47;
+  --surface: #3D2A5A;
+  --surface2: #4A3668;
+  --border: #5A3E7F;
+  --border2: #6F52A0;
+  --accent: #FFFFFF;
+  --accent2: #E0E0E0;
+  --text: #FFFFFF;
+  --muted: #B0B0B0;
+  --muted2: #9A9A9A;
+  --danger: #FF4444;
+  --success: #00CC88;
+  --warning: #FFB800;
+  --wa: #25D366;
+  --wa2: #1EB558;
+  --radius: 8px;
+  --radius-lg: 12px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 15px; line-height: 1.6; }
+.header { border-bottom: 2px solid var(--primary); padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 64px; position: sticky; top: 0; background: linear-gradient(135deg, #3D2A5A 0%, #4A3668 100%); backdrop-filter: blur(10px); z-index: 100; }
+.logo { display: flex; align-items: center; gap: 14px; }
+.logo-title { font-size: 16px; color: #DDDDDD; font-weight: 600; letter-spacing: .02em; }
+.header-actions { display: flex; align-items: center; gap: 16px; }
+.user-info { font-size: 12px; color: #AAAAAA; }
+.btn-logout { background: transparent; border: 1px solid var(--border2); color: var(--text); padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; transition: all .2s; }
+.btn-logout:hover { border-color: var(--primary); color: var(--primary); }
+.steps-nav { display: flex; border-bottom: 1px solid var(--border); padding: 0 32px; }
+.step-tab { padding: 14px 20px; font-size: 13px; color: #999999; cursor: pointer; border-bottom: 3px solid transparent; display: flex; align-items: center; gap: 8px; transition: all .2s; white-space: nowrap; font-weight: 600; }
+.step-tab.active { color: #FFFFFF; border-bottom-color: var(--primary); font-weight: 700; }
+.step-tab.done { color: var(--success); font-weight: 700; }
+.step-tab.locked { opacity: .4; cursor: not-allowed; pointer-events: none; }
+.step-num { width: 20px; height: 20px; border-radius: 50%; border: 1px solid currentColor; display: flex; align-items: center; justify-content: center; font-size: 10px; font-family: 'DM Mono', monospace; }
+.main { padding: 40px; max-width: 900px; margin: 0 auto; }
+.panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 28px; margin-bottom: 20px; box-shadow: 0 4px 16px rgba(54,1,95,.08); }
+.panel-title { font-size: 14px; text-transform: uppercase; letter-spacing: .08em; color: #FFFFFF; margin-bottom: 20px; font-family: 'DM Sans', sans-serif; font-weight: 700; }
+.login-container { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+.login-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 40px; width: 100%; max-width: 400px; box-shadow: 0 4px 16px rgba(54,1,95,.08); }
+.login-logo { text-align: center; margin-bottom: 30px; }
+.login-logo img { height: 60px; width: auto; margin-bottom: 16px; }
+.login-title { font-size: 20px; font-weight: 700; color: #FFFFFF; margin-bottom: 8px; }
+.login-subtitle { font-size: 13px; color: var(--muted); }
+.form-group { margin-bottom: 20px; }
+.form-label { display: block; font-size: 13px; color: #FFFFFF; margin-bottom: 10px; font-weight: 600; }
+.form-input { width: 100%; background: var(--surface2); border: 1px solid var(--border2); border-radius: var(--radius); padding: 12px 16px; color: #FFFFFF; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; transition: all .2s; outline: none; }
+.form-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(54,1,95,.1); }
+.form-input::placeholder { color: #888888; }
+.btn { padding: 12px 24px; border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all .2s; display: inline-flex; align-items: center; gap: 8px; justify-content: center; }
+.btn-primary { background: linear-gradient(135deg, var(--wa) 0%, var(--wa2) 100%); color: #FFFFFF; box-shadow: 0 4px 12px rgba(37,211,102,.3); }
+.btn-primary:hover { background: linear-gradient(135deg, var(--wa2) 0%, #1a9f4a 100%); box-shadow: 0 6px 16px rgba(37,211,102,.4); }
+.btn-primary:disabled { opacity: .4; cursor: not-allowed; }
+.btn-outline { background: transparent; border: 1px solid var(--border2); color: var(--text); }
+.btn-outline:hover { border-color: var(--primary); color: var(--primary); background: rgba(54,1,95,.05); }
+.error-msg { background: rgba(255, 68, 68, 0.1); border: 1px solid var(--danger); border-radius: var(--radius); padding: 12px 16px; color: var(--danger); font-size: 13px; margin-bottom: 16px; }
+.warning-msg { background: rgba(255, 184, 0, 0.1); border: 1px solid var(--warning); border-radius: var(--radius); padding: 12px 16px; color: var(--warning); font-size: 13px; margin-bottom: 16px; }
+.upload-zone { border: 2px dashed var(--border2); border-radius: var(--radius-lg); padding: 48px 32px; text-align: center; cursor: pointer; transition: all .2s; position: relative; background: rgba(54,1,95,.02); }
+.upload-zone:hover, .upload-zone.drag { border-color: var(--primary); background: rgba(54,1,95,.08); }
+.upload-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+.upload-icon { font-size: 32px; margin-bottom: 12px; }
+.upload-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; color: #FFFFFF; }
+.upload-sub { font-size: 13px; color: #999999; font-weight: 500; }
+.stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.stat-card { background: var(--surface2); border-radius: var(--radius); padding: 14px 16px; }
+.stat-label { font-size: 11px; color: #AAAAAA; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 4px; font-weight: 600; }
+.stat-value { font-size: 24px; font-weight: 700; font-family: 'DM Mono', monospace; color: #FFFFFF; }
+.section { display: none; }
+.section.active { display: block; }
+.actions-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 20px; }
+.actions-row .btn { flex: 1; }
+.actions-row .btn-outline { }
+.actions-row .btn-primary { }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN SECTION -->
+<div id="login-screen" class="login-container">
+  <div class="login-box">
+    <!-- CONFIG CREDENTIALS FORM (shown first if no credentials saved - LOGIN SCREEN ONLY) -->
+    <div id="config-section-login" style="display:none;">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+        <div>
+          <div class="login-title" style="font-size:16px;margin:0;margin-bottom:4px;">Configuración BD</div>
+          <div class="login-subtitle" style="font-size:11px;">SQL Server</div>
+        </div>
+        <button onclick="closeConfigSection()" style="background: transparent; border: none; color: #999; font-size: 24px; cursor: pointer; padding: 0; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">×</button>
+      </div>
+
+      <div id="config-error" class="error-msg" style="display:none; margin-bottom: 12px;"></div>
+      <div id="config-success" class="warning-msg" style="display:none;background:rgba(0,204,136,.1);border-color:var(--success);color:var(--success); margin-bottom: 12px;"></div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+        <div class="form-group" style="margin: 0;">
+          <label class="form-label" style="font-size: 12px;">Host / IP</label>
+          <input type="text" id="config-host" class="form-input" placeholder="localhost" value="localhost" style="font-size: 13px; padding: 10px 12px;">
+        </div>
+        <div class="form-group" style="margin: 0;">
+          <label class="form-label" style="font-size: 12px;">Puerto</label>
+          <input type="number" id="config-port" class="form-input" placeholder="1433" value="1433" style="font-size: 13px; padding: 10px 12px;">
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+        <div class="form-group" style="margin: 0;">
+          <label class="form-label" style="font-size: 12px;">Base de datos</label>
+          <input type="text" id="config-database" class="form-input" placeholder="ClubUAA" style="font-size: 13px; padding: 10px 12px;">
+        </div>
+        <div class="form-group" style="margin: 0;">
+          <label class="form-label" style="font-size: 12px;">Usuario</label>
+          <input type="text" id="config-username" class="form-input" placeholder="sa" style="font-size: 13px; padding: 10px 12px;">
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 12px;">
+        <label class="form-label" style="font-size: 12px;">Contraseña</label>
+        <input type="password" id="config-password" class="form-input" placeholder="••••••••" style="font-size: 13px; padding: 10px 12px;">
+      </div>
+
+      <div style="display: flex; gap: 10px;">
+        <button class="btn btn-outline" id="config-test-btn" onclick="handleTestConnection()" style="flex: 1; font-size: 12px; padding: 10px 12px;">Probar</button>
+        <button class="btn btn-primary" id="config-save-btn" onclick="handleSaveCredentials()" style="flex: 1; font-size: 12px; padding: 10px 12px;">Guardar</button>
+      </div>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div id="login-section" style="display:none;">
+      <div class="login-logo">
+        <img src="logo.png" alt="Club UAA">
+        <div class="login-title">Campañas Club UAA</div>
+        <div class="login-subtitle">Sistema de campañas por WhatsApp</div>
+      </div>
+
+      <div id="login-error" class="error-msg" style="display:none;"></div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <div style="display: flex; align-items: center; gap: 0;">
+          <input type="text" id="login-email" class="form-input" placeholder="usuario" autocomplete="email" style="flex: 1; border-radius: 4px 0 0 4px; margin: 0;">
+          <span style="background: var(--surface2); padding: 12px 16px; border: 1px solid var(--border2); border-left: none; border-radius: 0 4px 4px 0; color: #999; font-size: 14px;">@uaa.com.ar</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Contraseña</label>
+        <input type="password" id="login-password" class="form-input" placeholder="••••••••" autocomplete="current-password" onkeypress="if(event.key==='Enter') handleLogin()">
+      </div>
+      <button class="btn btn-primary" onclick="handleLogin()" style="width: 100%; justify-content: center;">Ingresar</button>
+    </div>
+
+    <!-- CHANGE PASSWORD FORM -->
+    <div id="change-password-form" style="display:none;">
+      <div class="warning-msg">Esta es tu primera vez. Por favor cambia tu contraseña temporal.</div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" id="change-email" class="form-input" disabled style="opacity: 0.6;">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Contraseña actual (temporal)</label>
+        <input type="password" id="change-current" class="form-input" placeholder="••••••••" disabled style="opacity: 0.6;">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Nueva contraseña</label>
+        <input type="password" id="change-new" class="form-input" placeholder="••••••••">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Confirmar contraseña</label>
+        <input type="password" id="change-confirm" class="form-input" placeholder="••••••••">
+      </div>
+      <div id="change-error" class="error-msg" style="display:none;"></div>
+      <button class="btn btn-primary" onclick="handleChangePassword()">Cambiar contraseña</button>
+    </div>
+  </div>
+</div>
+
+<!-- APP SECTION -->
+<div id="app-screen" style="display:none;">
+  <header class="header">
+    <div class="logo">
+      <img src="logo.png" alt="Club UAA" style="height: 44px; width: auto; object-fit: contain;">
+      <span class="logo-title">Campañas Super UAA v2</span>
+    </div>
+    <div class="header-actions">
+      <div class="user-info" id="user-display">Usuario: -</div>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #AAAAAA;">
+          <div id="status-indicator" style="width: 8px; height: 8px; border-radius: 50%; background: #00CC88; transition: background .3s;"></div>
+          <span id="status-text">Conectado</span>
+        </div>
+        <button class="btn-logout" onclick="handleEditCredentials()" style="padding: 6px 12px; font-size: 12px;">Editar credenciales</button>
+        <button class="btn-logout" onclick="handleLogout()">Cerrar sesión</button>
+      </div>
+    </div>
+  </header>
+
+  <nav class="steps-nav">
+    <div class="step-tab active" id="tab-0" onclick="goStep(0)"><div class="step-num">1</div> Cargar datos</div>
+    <div class="step-tab locked" id="tab-1" onclick="goStep(1)"><div class="step-num">2</div> Diseñar</div>
+    <div class="step-tab locked" id="tab-2" onclick="goStep(2)"><div class="step-num">3</div> Preview</div>
+    <div class="step-tab locked" id="tab-3" onclick="goStep(3)"><div class="step-num">4</div> Envío</div>
+  </nav>
+
+  <main class="main">
+    <!-- STEP 0: CARGAR DATOS -->
+    <div class="section active" id="step-0">
+      <div class="panel">
+        <div class="panel-title">Archivo de contactos</div>
+        <div class="upload-zone" id="drop-zone">
+          <input type="file" id="file-input" accept=".xlsx,.xls,.csv">
+          <div class="upload-icon">📊</div>
+          <div class="upload-title">Arrastrá o hacé clic para subir</div>
+          <div class="upload-sub">Excel o CSV con nombres y teléfonos</div>
+        </div>
+      </div>
+      <div id="preview-section" style="display:none">
+        <div class="stats-row" id="stats-row"></div>
+        <div class="actions-row">
+          <span style="font-size:12px;color:var(--muted)" id="col-status"></span>
+          <button class="btn btn-primary" onclick="goStep(1)">Diseñar mensaje →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 1: DISEÑAR -->
+    <div class="section" id="step-1">
+      <div style="background: rgba(54,1,95,.05); border: 1px solid rgba(54,1,95,.2); border-radius: 8px; padding: 12px 16px; font-size: 13px; margin-bottom: 16px; color: #8464B8;">
+        💡 Seleccioná una plantilla y personalizá agregando tus variables (link, precio, etc.)
+      </div>
+      <div class="panel">
+        <div class="panel-title">Plantillas disponibles</div>
+        <div id="templates-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Preview del mensaje</div>
+        <div style="background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 20px; font-size: 13px; line-height: 1.7;">
+          <div style="font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: #AAAAAA; margin-bottom: 6px; font-family: 'DM Mono', monospace; font-weight: 600;">Para</div>
+          <div style="margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--border); font-size: 13px;" id="prev-to">—</div>
+          <div style="font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: #AAAAAA; margin-bottom: 6px; font-family: 'DM Mono', monospace; font-weight: 600;">Mensaje</div>
+          <div id="prev-body" style="color: #FFFFFF; white-space: pre-wrap; line-height: 1.8; font-size: 14px;">Seleccioná una plantilla para ver el preview</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+          <div class="panel-title" style="margin: 0;">Variables del mensaje</div>
+          <button class="btn btn-outline" onclick="showPasteModal()" style="padding: 6px 12px; font-size: 12px;">Pegar desde tabla</button>
+        </div>
+        <div id="variables-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;"></div>
+      </div>
+
+      <!-- PASTE MODAL -->
+      <div id="paste-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:2000;align-items:center;justify-content:center;">
+        <div class="login-box" style="position:relative;width:90%;max-width:500px;padding:24px;">
+          <button onclick="closePasteModal()" style="position:absolute;top:16px;right:16px;background:transparent;border:none;color:#999;font-size:24px;cursor:pointer;padding:0;width:24px;height:24px;display:flex;align-items:center;justify-content:center;">×</button>
+
+          <div style="margin-bottom:16px;">
+            <div class="login-title" style="font-size:16px;margin:0;margin-bottom:4px;">Pegar datos de tabla</div>
+            <div class="login-subtitle" style="font-size:11px;">Copia desde Excel: Producto, Precio, Oferta (separado por tabulaciones)</div>
+          </div>
+
+          <textarea id="paste-textarea" placeholder="Pegá los datos aquí (de Excel/Sheets)&#10;Ej: Producto	$10	$5" style="width:100%;height:150px;background:var(--surface2);border:1px solid var(--border2);border-radius:4px;padding:12px;color:#FFF;font-family:monospace;font-size:12px;resize:vertical;"></textarea>
+
+          <div id="paste-error" class="error-msg" style="display:none;margin-top:12px;"></div>
+
+          <div style="display:flex;gap:10px;margin-top:16px;">
+            <button class="btn btn-outline" onclick="closePasteModal()" style="flex:1;">Cancelar</button>
+            <button class="btn btn-primary" onclick="handlePasteData()" style="flex:1;">Pegar</button>
+          </div>
+        </div>
+      </div>
+      <div class="actions-row">
+        <button class="btn btn-outline" onclick="goStep(0)">← Volver</button>
+        <button class="btn btn-primary" onclick="validateAndGoStep(2)">Ver preview completo →</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: PREVIEW -->
+    <div class="section" id="step-2">
+      <div class="panel">
+        <div class="panel-title">Preview del mensaje</div>
+        <div style="background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 20px; font-size: 13px; line-height: 1.7;">
+          <div style="font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: #AAAAAA; margin-bottom: 6px; font-family: 'DM Mono', monospace; font-weight: 600;">Para</div>
+          <div style="margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--border); font-size: 13px;" id="prev-to-full">—</div>
+          <div style="font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: #AAAAAA; margin-bottom: 6px; font-family: 'DM Mono', monospace; font-weight: 600;">Mensaje</div>
+          <div id="prev-body-full" style="color: #FFFFFF; white-space: pre-wrap; line-height: 1.8; font-size: 14px;"></div>
+        </div>
+      </div>
+      <div class="actions-row">
+        <button class="btn btn-outline" onclick="goStep(1)">← Editar</button>
+        <button class="btn btn-primary" onclick="goStep(3)">Configurar envío →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: ENVÍO -->
+    <div class="section" id="step-3">
+      <div class="panel">
+        <div class="panel-title">Crear campaña</div>
+        <div style="background: rgba(37,211,102,.05); border: 1px solid rgba(37,211,102,.2); border-radius: 8px; padding: 12px 16px; font-size: 13px; margin-bottom: 20px; color: #00CC88;">
+          ✓ <span id="envio-stats">Preparado para enviar a X contactos</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Nombre de la campaña</label>
+          <input type="text" id="campania-nombre" class="form-input" placeholder="Ej: Ofertas Quincenales - Junio" autocomplete="off">
+        </div>
+
+        <div id="envio-error" class="error-msg" style="display:none;"></div>
+        <div id="envio-success" class="warning-msg" style="display:none;background:rgba(0,204,136,.1);border-color:var(--success);color:var(--success)"></div>
+
+        <div class="actions-row" style="margin-top: 24px;">
+          <button class="btn btn-outline" onclick="goStep(2)">← Editar</button>
+          <button class="btn btn-primary" id="btn-crear-campania" onclick="handleCreateCampaign()">Crear campaña</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- GLOBAL CONFIG MODAL (appears on top of any screen) -->
+<div id="config-modal-global" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:3000;align-items:center;justify-content:center;">
+  <div class="login-box" style="position:relative;width:85%;max-width:360px;padding:24px;">
+    <button onclick="closeConfigModal()" style="position:absolute;top:16px;right:16px;background:transparent;border:none;color:#999;font-size:24px;cursor:pointer;padding:0;width:24px;height:24px;display:flex;align-items:center;justify-content:center;">×</button>
+
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+      <div>
+        <div class="login-title" style="font-size:16px;margin:0;margin-bottom:4px;">Configuración BD</div>
+        <div class="login-subtitle" style="font-size:11px;">SQL Server</div>
+      </div>
+    </div>
+
+    <div id="config-error" class="error-msg" style="display:none; margin-bottom: 12px;"></div>
+    <div id="config-success" class="warning-msg" style="display:none;background:rgba(0,204,136,.1);border-color:var(--success);color:var(--success); margin-bottom: 12px;"></div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+      <div class="form-group" style="margin: 0;">
+        <label class="form-label" style="font-size: 12px;">Host / IP</label>
+        <input type="text" id="config-host" class="form-input" placeholder="localhost" value="localhost" style="font-size: 13px; padding: 10px 12px;">
+      </div>
+      <div class="form-group" style="margin: 0;">
+        <label class="form-label" style="font-size: 12px;">Puerto</label>
+        <input type="number" id="config-port" class="form-input" placeholder="1433" value="1433" style="font-size: 13px; padding: 10px 12px;">
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+      <div class="form-group" style="margin: 0;">
+        <label class="form-label" style="font-size: 12px;">Base de datos</label>
+        <input type="text" id="config-database" class="form-input" placeholder="ClubUAA" style="font-size: 13px; padding: 10px 12px;">
+      </div>
+      <div class="form-group" style="margin: 0;">
+        <label class="form-label" style="font-size: 12px;">Usuario</label>
+        <input type="text" id="config-username" class="form-input" placeholder="sa" style="font-size: 13px; padding: 10px 12px;">
+      </div>
+    </div>
+
+    <div class="form-group" style="margin-bottom: 12px;">
+      <label class="form-label" style="font-size: 12px;">Contraseña</label>
+      <input type="password" id="config-password" class="form-input" placeholder="••••••••" style="font-size: 13px; padding: 10px 12px;">
+    </div>
+
+    <div style="display: flex; gap: 10px;">
+      <button class="btn btn-outline" id="config-test-btn" onclick="handleTestConnection()" style="flex: 1; font-size: 12px; padding: 10px 12px;">Probar</button>
+      <button class="btn btn-primary" id="config-save-btn" onclick="handleSaveCredentials()" style="flex: 1; font-size: 12px; padding: 10px 12px;">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentUser = null;
+
+// ============================================================================
+// AUTH FUNCTIONS
+// ============================================================================
+async function handleLogin() {
+  let email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const errorDiv = document.getElementById('login-error');
+
+  errorDiv.style.display = 'none';
+
+  if (!email || !password) {
+    errorDiv.textContent = 'Por favor completa email y contraseña';
+    errorDiv.style.display = 'block';
+    return;
+  }
+
+  email = email + '@uaa.com.ar';
+
+  const loginBtn = document.querySelector('.btn-primary');
+  loginBtn.disabled = true;
+  loginBtn.textContent = 'Autenticando...';
+
+  try {
+    const result = await window.electron.api.dbAuthLogin(email, password);
+    console.log('Login result:', result);
+
+    if (result.success) {
+      currentUser = result.user;
+      console.log('Current user set:', currentUser);
+      console.log('Is temporary?', result.user.isTemporary);
+
+      if (result.user.isTemporary) {
+        console.log('Showing change password form');
+        showChangePasswordForm(email, password);
+      } else {
+        console.log('Checking credentials and showing next screen');
+        checkAndShowNextScreen();
+      }
+    } else {
+      console.error('Login failed:', result.error);
+      errorDiv.textContent = 'Email o contraseña incorrectos';
+      errorDiv.style.display = 'block';
+    }
+  } catch (err) {
+    console.error('Login error:', err);
+    errorDiv.textContent = 'Error de conexión: ' + err.message;
+    errorDiv.style.display = 'block';
+  } finally {
+    loginBtn.disabled = false;
+    loginBtn.textContent = 'Ingresar';
+  }
+}
+
+function showChangePasswordForm(email, currentPassword) {
+  document.getElementById('login-section').style.display = 'none';
+  document.getElementById('config-section').style.display = 'none';
+  document.getElementById('change-password-form').style.display = 'block';
+  document.getElementById('change-email').value = email;
+  document.getElementById('change-current').value = currentPassword;
+}
+
+async function handleChangePassword() {
+  const newPassword = document.getElementById('change-new').value;
+  const confirmPassword = document.getElementById('change-confirm').value;
+  const errorDiv = document.getElementById('change-error');
+
+  errorDiv.style.display = 'none';
+
+  if (!newPassword || !confirmPassword) {
+    errorDiv.textContent = 'Por favor completa ambos campos';
+    errorDiv.style.display = 'block';
+    return;
+  }
+
+  if (newPassword.length < 6) {
+    errorDiv.textContent = 'La contraseña debe tener al menos 6 caracteres';
+    errorDiv.style.display = 'block';
+    return;
+  }
+
+  if (newPassword !== confirmPassword) {
+    errorDiv.textContent = 'Las contraseñas no coinciden';
+    errorDiv.style.display = 'block';
+    return;
+  }
+
+  const changeBtn = document.querySelector('#change-password-form .btn-primary');
+  changeBtn.disabled = true;
+  changeBtn.textContent = 'Cambiando...';
+
+  try {
+    const result = await window.electron.api.dbChangePassword(currentUser.email, newPassword);
+
+    if (result.success) {
+      checkAndShowNextScreen();
+    } else {
+      errorDiv.textContent = 'Error al cambiar contraseña: ' + (result.error || 'Intenta de nuevo');
+      errorDiv.style.display = 'block';
+    }
+  } catch (err) {
+    console.error('Change password error:', err);
+    errorDiv.textContent = 'Error: ' + err.message;
+    errorDiv.style.display = 'block';
+  } finally {
+    changeBtn.disabled = false;
+    changeBtn.textContent = 'Cambiar contraseña';
+  }
+}
+
+async function checkAndShowNextScreen() {
+  try {
+    console.log('Checking for credentials...');
+    const hasCredentials = await window.electron.api.dbCredentialsExist();
+    console.log('Has credentials:', hasCredentials);
+
+    if (!hasCredentials) {
+      console.log('No credentials found');
+      return;
+    } else {
+      console.log('Credentials found, initializing database');
+      await window.electron.api.dbInit();
+      showApp();
+    }
+  } catch (err) {
+    console.error('Error checking credentials:', err);
+  }
+}
+
+function handleLogout() {
+  currentUser = null;
+  document.getElementById('app-screen').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('login-section').style.display = 'none';
+  document.getElementById('config-section-login').style.display = 'none';
+  document.getElementById('change-password-form').style.display = 'none';
+  document.getElementById('login-email').value = '';
+  document.getElementById('login-password').value = '';
+  document.getElementById('change-email').value = '';
+  document.getElementById('change-current').value = '';
+  document.getElementById('change-new').value = '';
+  document.getElementById('change-confirm').value = '';
+  initLoginScreen();
+}
+
+function initLoginScreen() {
+  checkCredentialsAndShowForm();
+}
+
+async function checkCredentialsAndShowForm() {
+  try {
+    const hasCredentials = await window.electron.api.dbCredentialsExist();
+    if (hasCredentials) {
+      document.getElementById('config-section-login').style.display = 'none';
+      document.getElementById('login-section').style.display = 'block';
+    } else {
+      document.getElementById('config-section-login').style.display = 'block';
+      document.getElementById('login-section').style.display = 'none';
+    }
+  } catch (err) {
+    console.error('Error checking credentials:', err);
+    document.getElementById('config-section').style.display = 'block';
+    document.getElementById('login-section').style.display = 'none';
+  }
+}
+
+async function handleTestConnection() {
+  const host = document.getElementById('config-host').value.trim();
+  const port = parseInt(document.getElementById('config-port').value);
+  const database = document.getElementById('config-database').value.trim();
+  const username = document.getElementById('config-username').value.trim();
+  const password = document.getElementById('config-password').value;
+
+  const errorDiv = document.getElementById('config-error');
+  const successDiv = document.getElementById('config-success');
+  errorDiv.style.display = 'none';
+  successDiv.style.display = 'none';
+
+  if (!host || !port || !database || !username || !password) {
+    errorDiv.textContent = 'Por favor completa todos los campos';
+    errorDiv.style.display = 'block';
+    return;
+  }
+
+  const testBtn = document.getElementById('config-test-btn');
+  testBtn.disabled = true;
+  testBtn.textContent = 'Probando...';
+
+  try {
+    const result = await window.electron.api.dbTestConnection({
+      host, port, database, username, password
+    });
+
+    if (result.success) {
+      successDiv.textContent = '✓ Conexión exitosa a SQL Server';
+      successDiv.style.display = 'block';
+    } else {
+      errorDiv.textContent = '✗ Error: ' + (result.message || 'No se pudo conectar');
+      errorDiv.style.display = 'block';
+    }
+  } catch (err) {
+    errorDiv.textContent = '✗ Error: ' + err.message;
+    errorDiv.style.display = 'block';
+  } finally {
+    testBtn.disabled = false;
+    testBtn.textContent = 'Probar conexión';
+  }
+}
+
+async function handleSaveCredentials() {
+  const host = document.getElementById('config-host').value.trim();
+  const port = parseInt(document.getElementById('config-port').value);
+  const database = document.getElementById('config-database').value.trim();
+  const username = document.getElementById('config-username').value.trim();
+  const password = document.getElementById('config-password').value;
+
+  const errorDiv = document.getElementById('config-error');
+  const successDiv = document.getElementById('config-success');
+  errorDiv.style.display = 'none';
+  successDiv.style.display = 'none';
+
+  if (!host || !port || !database || !username || !password) {
+    errorDiv.textContent = 'Por favor completa todos los campos';
+    errorDiv.style.display = 'block';
+    return;
+  }
+
+  const saveBtn = document.getElementById('config-save-btn');
+  saveBtn.disabled = true;
+  saveBtn.textContent = 'Guardando...';
+
+  try {
+    const result = await window.electron.api.dbSaveCredentials({
+      host, port, database, username, password
+    });
+
+    if (result.success) {
+      successDiv.textContent = '✓ Credenciales guardadas. Cargando login...';
+      successDiv.style.display = 'block';
+      setTimeout(() => {
+        document.getElementById('config-section').style.display = 'none';
+        document.getElementById('login-section').style.display = 'block';
+        document.getElementById('config-error').style.display = 'none';
+        document.getElementById('config-success').style.display = 'none';
+      }, 1000);
+    } else {
+      errorDiv.textContent = '✗ Error: ' + (result.error || 'No se pudieron guardar');
+      errorDiv.style.display = 'block';
+    }
+  } catch (err) {
+    errorDiv.textContent = '✗ Error: ' + err.message;
+    errorDiv.style.display = 'block';
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Guardar credenciales';
+  }
+}
+
+function showApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app-screen').style.display = 'block';
+  document.getElementById('user-display').textContent = `Usuario: ${currentUser.email}`;
+  updateConnectionStatus();
+  initApp();
+}
+
+function updateConnectionStatus() {
+  const indicator = document.getElementById('status-indicator');
+  const statusText = document.getElementById('status-text');
+
+  if (indicator && statusText) {
+    indicator.style.background = '#00CC88';
+    statusText.textContent = 'Conectado';
+  }
+}
+
+function handleEditCredentials() {
+  document.getElementById('config-modal-global').style.display = 'flex';
+  document.getElementById('config-error').style.display = 'none';
+  document.getElementById('config-success').style.display = 'none';
+  document.getElementById('config-host').value = 'localhost';
+  document.getElementById('config-port').value = '1433';
+  document.getElementById('config-database').value = '';
+  document.getElementById('config-username').value = '';
+  document.getElementById('config-password').value = '';
+}
+
+function closeConfigModal() {
+  document.getElementById('config-modal-global').style.display = 'none';
+}
+
+// ============================================================================
+// CAMPAIGN APP (same as before)
+// ============================================================================
+let rawData = [];
+let data = [];
+let columns = [];
+let previewIdx = 0;
+let maxStep = 0;
+let selectedTemplate = null;
+let customVars = {};
+
+const TEMPLATES = [
+  {
+    id: 'ofertas_3',
+    plantilla_meta: 'super_ofertas',
+    name: 'Ofertas Quincenales',
+    subtitle: '3 Destacados',
+    icon: '🎁',
+    body: `Hola {{nombre}},\n\n¡No te pierdas nuestras SUPER OFERTAS! Aprovechá nuestras ofertas destacadas:\n\n{{prod_1}}: {{precio_1}} → {{oferta_1}}\n{{prod_2}}: {{precio_2}} → {{oferta_2}}\n{{prod_3}}: {{precio_3}} → {{oferta_3}}\n\nVer el catálogo completo de ofertas: {{link_catálogo_personalizado}}\n\n¡Hasta pronto!\nEquipo Club UAA`,
+    variables: ['prod_1', 'precio_1', 'oferta_1', 'prod_2', 'precio_2', 'oferta_2', 'prod_3', 'precio_3', 'oferta_3', 'link_catálogo_personalizado']
+  }
+];
+
+const FIELD_ALIASES = {
+  telefono: ['telefono','celular','phone','whatsapp','x_telefono','x_celular','tel','movil','móvil','telefono_celular'],
+  nombre: ['nombre','apellido y nombre','apellido_nombre','name','apellido','x_nombres','cliente']
+};
+
+function detectAlias(fieldAliases, cols) {
+  const colsLower = cols.map(c => c.toLowerCase().trim());
+  for (const alias of fieldAliases) {
+    const idx = colsLower.findIndex(c => c === alias || c.includes(alias));
+    if (idx !== -1) return cols[idx];
+  }
+  return '';
+}
+
+function initApp() {
+  document.getElementById('file-input').addEventListener('change', e => handleFile(e.target.files[0]));
+
+  const dropZone = document.getElementById('drop-zone');
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag'));
+  dropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropZone.classList.remove('drag');
+    if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+  });
+}
+
+function handleFile(file) {
+  if (!file) return;
+  const ext = file.name.split('.').pop().toLowerCase();
+  const reader = new FileReader();
+  if (ext === 'csv') {
+    reader.onload = ev => parseCSV(ev.target.result);
+    reader.readAsText(file, 'UTF-8');
+  } else {
+    reader.onload = ev => parseXLSX(ev.target.result);
+    reader.readAsArrayBuffer(file);
+  }
+}
+
+function parseXLSX(buf) {
+  const wb = XLSX.read(buf, { type: 'array' });
+  const ws = wb.Sheets[wb.SheetNames[0]];
+  const json = XLSX.utils.sheet_to_json(ws, { defval: '' });
+  rawData = json;
+  columns = Object.keys(json[0] || {});
+  renderStep0();
+}
+
+function parseCSV(text) {
+  text = text.replace(/^[﻿￾]/g, '');
+  const lines = text.split('\n').filter(l => l.trim());
+  if (!lines.length) return;
+  const firstLine = lines[0];
+  const sep = firstLine.split(';').length > firstLine.split(',').length ? ';' : ',';
+  const headers = firstLine.split(sep).map(h => h.trim().replace(/^"|"$/g, ''));
+  const rows = lines.slice(1).map(line => {
+    const vals = line.split(sep).map(v => v.trim().replace(/^"|"$/g, ''));
+    const obj = {};
+    headers.forEach((h, i) => { obj[h] = vals[i] || ''; });
+    return obj;
+  }).filter(r => Object.values(r).some(v => v));
+  rawData = rows;
+  columns = headers;
+  renderStep0();
+}
+
+function renderStep0() {
+  document.getElementById('preview-section').style.display = 'block';
+  document.getElementById('stats-row').innerHTML = `
+    <div class="stat-card"><div class="stat-label">Contactos</div><div class="stat-value" style="color: var(--accent);">${rawData.length.toLocaleString('es-AR')}</div></div>
+    <div class="stat-card"><div class="stat-label">Columnas</div><div class="stat-value">${columns.length}</div></div>
+  `;
+  document.getElementById('col-status').textContent = `${columns.length} columnas detectadas · próximo paso: diseñar mensaje`;
+
+  const telCol = detectAlias(FIELD_ALIASES.telefono, columns);
+  const nomCol = detectAlias(FIELD_ALIASES.nombre, columns);
+
+  data = rawData.filter(r => r[telCol] && r[nomCol]).map(row => ({
+    nombre: row[nomCol] || '',
+    telefono: row[telCol] || '',
+    ...row
+  }));
+
+  unlockStep(1);
+}
+
+function renderTemplates() {
+  const grid = document.getElementById('templates-grid');
+  grid.innerHTML = TEMPLATES.map(t => `
+    <div onclick="selectTemplate('${t.id}')" style="background: var(--surface2); border: 2px solid ${selectedTemplate === t.id ? 'var(--wa)' : 'var(--border2)'}; border-radius: 8px; padding: 16px; cursor: pointer; transition: all .2s;">
+      <div style="font-size:24px;margin-bottom:8px">${t.icon || '🎁'}</div>
+      <div style="font-size:13px;font-weight:700;margin-bottom:8px;color:#FFFFFF">${t.name}</div>
+      ${t.subtitle ? `<div style="font-size:12px;color:var(--muted)">${t.subtitle}</div>` : ''}
+    </div>
+  `).join('');
+
+  if (!selectedTemplate && TEMPLATES.length > 0) {
+    selectTemplate(TEMPLATES[0].id);
+  }
+}
+
+function selectTemplate(templateId) {
+  selectedTemplate = templateId;
+  customVars = {};
+  unlockStep(2);
+  unlockStep(3);
+  renderTemplates();
+  renderVariablesForm();
+  renderTemplatePreview();
+}
+
+function renderVariablesForm() {
+  const container = document.getElementById('variables-form');
+  if (!selectedTemplate) {
+    container.innerHTML = '<p style="grid-column: 1 / -1; color: var(--muted); font-size: 13px;">Seleccioná una plantilla</p>';
+    return;
+  }
+
+  const template = TEMPLATES.find(t => t.id === selectedTemplate);
+  if (!template || !template.variables || template.variables.length === 0) {
+    container.innerHTML = '<p style="grid-column: 1 / -1; color: var(--muted); font-size: 13px;">Esta plantilla no tiene variables</p>';
+    return;
+  }
+
+  container.innerHTML = template.variables.map(v => `
+    <div>
+      <label style="display: block; font-size: 11px; color: #AAAAAA; text-transform: uppercase; margin-bottom: 6px; font-weight: 600;">${v}</label>
+      <input type="text"
+             placeholder="Ingresá valor"
+             value="${customVars[v] || ''}"
+             onchange="updateVariable('${v}', this.value)"
+             style="width: 100%; background: var(--surface2); border: 1px solid var(--border2); border-radius: 4px; padding: 10px 12px; color: #FFFFFF; font-size: 13px; font-family: 'DM Sans', sans-serif;">
+    </div>
+  `).join('');
+}
+
+function updateVariable(varName, value) {
+  customVars[varName] = value;
+  renderTemplatePreview();
+}
+
+function renderTemplatePreview() {
+  if (!selectedTemplate || !data.length) return;
+  const template = TEMPLATES.find(t => t.id === selectedTemplate);
+  const firstRow = data[0];
+  let body = template.body;
+  body = body.replace(/\{\{nombre\}\}/g, firstRow.nombre || '{{nombre}}');
+  template.variables.forEach(v => {
+    const value = customVars[v];
+    const replacement = !value ? '<span style="text-decoration: line-through; opacity: 0.5;">—</span>' : value;
+    body = body.replace(new RegExp(`\\{\\{${v}\\}\\}`, 'g'), replacement);
+  });
+  document.getElementById('prev-to').textContent = `${firstRow.nombre} — ${firstRow.telefono}`;
+  document.getElementById('prev-body').innerHTML = body.replace(/\n/g, '<br>');
+}
+
+function renderPreviewMsg() {
+  if (!selectedTemplate || !data.length) return;
+  const template = TEMPLATES.find(t => t.id === selectedTemplate);
+  const row = data[previewIdx];
+  let body = template.body;
+  body = body.replace(/\{\{nombre\}\}/g, row.nombre || '{{nombre}}');
+  template.variables.forEach(v => {
+    const value = customVars[v];
+    const replacement = !value ? '<span style="text-decoration: line-through; opacity: 0.5;">—</span>' : value;
+    body = body.replace(new RegExp(`\\{\\{${v}\\}\\}`, 'g'), replacement);
+  });
+  document.getElementById('prev-to-full').textContent = `${row.nombre} — ${row.telefono}`;
+  document.getElementById('prev-body-full').innerHTML = body.replace(/\n/g, '<br>');
+}
+
+function unlockStep(n) { if (n > maxStep) maxStep = n; }
+
+function validateAndGoStep(n) {
+  if (n === 2 && !selectedTemplate) {
+    alert('Por favor seleccioná una plantilla primero');
+    return;
+  }
+  goStep(n);
+}
+
+function goStep(n) {
+  if (n > maxStep && n !== 0) return;
+
+  if (n === 1) { renderTemplates(); renderVariablesForm(); renderTemplatePreview(); }
+  if (n === 2) { previewIdx = 0; renderPreviewMsg(); }
+  if (n === 3) { updateCampaignStats(); }
+
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById(`step-${n}`).classList.add('active');
+
+  document.querySelectorAll('.step-tab').forEach((t, i) => {
+    t.classList.remove('active','done','locked');
+    if      (i === n)            t.classList.add('active');
+    else if (i < n)              t.classList.add('done');
+    else if (i > maxStep)        t.classList.add('locked');
+  });
+}
+
+function showPasteModal() {
+  document.getElementById('paste-modal').style.display = 'flex';
+  document.getElementById('paste-textarea').value = '';
+  document.getElementById('paste-error').style.display = 'none';
+  document.getElementById('paste-textarea').focus();
+}
+
+function closePasteModal() {
+  document.getElementById('paste-modal').style.display = 'none';
+}
+
+function handlePasteData() {
+  const text = document.getElementById('paste-textarea').value.trim();
+  const errorDiv = document.getElementById('paste-error');
+  errorDiv.style.display = 'none';
+
+  if (!text) {
+    errorDiv.textContent = 'Por favor pegá datos en el textarea';
+    errorDiv.style.display = 'block';
+    return;
+  }
+
+  try {
+    // Parse tab-separated values (Excel format)
+    const lines = text.split('\n').filter(l => l.trim());
+
+    if (lines.length !== 3) {
+      errorDiv.textContent = 'Debes pegar exactamente 3 filas (Producto, Precio, Oferta)';
+      errorDiv.style.display = 'block';
+      return;
+    }
+
+    // Parse each line: Product\tPrice\tDiscount
+    const row1 = lines[0].split('\t').map(v => v.trim());
+    const row2 = lines[1].split('\t').map(v => v.trim());
+    const row3 = lines[2].split('\t').map(v => v.trim());
+
+    if (row1.length < 3 || row2.length < 3 || row3.length < 3) {
+      errorDiv.textContent = 'Cada fila debe tener 3 valores (Producto, Precio, Oferta)';
+      errorDiv.style.display = 'block';
+      return;
+    }
+
+    // Helper to parse currency (e.g., "$2.890,88" -> "2890.88")
+    const parseCurrency = (str) => {
+      if (!str) return null;
+      return str.replace(/[^\d,.-]/g, '').replace(',', '.');
+    };
+
+    // Update customVars
+    customVars['prod_1'] = row1[0];
+    customVars['precio_1'] = parseCurrency(row1[1]);
+    customVars['oferta_1'] = parseCurrency(row1[2]);
+
+    customVars['prod_2'] = row2[0];
+    customVars['precio_2'] = parseCurrency(row2[1]);
+    customVars['oferta_2'] = parseCurrency(row2[2]);
+
+    customVars['prod_3'] = row3[0];
+    customVars['precio_3'] = parseCurrency(row3[1]);
+    customVars['oferta_3'] = parseCurrency(row3[2]);
+
+    console.log('Pasted data:', customVars);
+
+    // Re-render form and preview
+    renderVariablesForm();
+    renderTemplatePreview();
+    closePasteModal();
+  } catch (err) {
+    console.error('Paste error:', err);
+    errorDiv.textContent = 'Error al procesar datos: ' + err.message;
+    errorDiv.style.display = 'block';
+  }
+}
+
+function updateCampaignStats() {
+  document.getElementById('envio-stats').textContent = `Preparado para enviar a ${data.length} contactos`;
+  document.getElementById('campania-nombre').value = '';
+  document.getElementById('envio-error').style.display = 'none';
+  document.getElementById('envio-success').style.display = 'none';
+}
+
+async function handleCreateCampaign() {
+  const nombre = document.getElementById('campania-nombre').value.trim();
+  const errorDiv = document.getElementById('envio-error');
+  const successDiv = document.getElementById('envio-success');
+
+  errorDiv.style.display = 'none';
+  successDiv.style.display = 'none';
+
+  if (!nombre) {
+    errorDiv.textContent = 'Por favor ingresá un nombre para la campaña';
+    errorDiv.style.display = 'block';
+    return;
+  }
+
+  if (!selectedTemplate) {
+    errorDiv.textContent = 'Por favor selecciona una plantilla';
+    errorDiv.style.display = 'block';
+    return;
+  }
+
+  const template = TEMPLATES.find(t => t.id === selectedTemplate);
+  const btn = document.getElementById('btn-crear-campania');
+  btn.disabled = true;
+  btn.textContent = 'Creando...';
+
+  try {
+    const envios = data.map(row => ({
+      nombre: row.nombre,
+      telefono: row.telefono,
+      prod_1: customVars['prod_1'] || null,
+      precio_1: customVars['precio_1'] || null,
+      oferta_1: customVars['oferta_1'] || null,
+      prod_2: customVars['prod_2'] || null,
+      precio_2: customVars['precio_2'] || null,
+      oferta_2: customVars['oferta_2'] || null,
+      prod_3: customVars['prod_3'] || null,
+      precio_3: customVars['precio_3'] || null,
+      oferta_3: customVars['oferta_3'] || null,
+      link_catalogo: customVars['link_catálogo_personalizado'] || null
+    }));
+
+    console.log('Creating campaign with', envios.length, 'envios');
+
+    const result = await window.electron.api.dbCreateCampaign({
+      nombre: String(nombre),
+      plantilla_meta: String(template.plantilla_meta),
+      id_usuario: String(currentUser.id),
+      total_contactos: String(data.length),
+      envios
+    });
+
+    if (result.success) {
+      successDiv.innerHTML = `✓ Campaña creada exitosamente<br><span style="font-size: 12px;">${result.envios_created} contactos preparados para envío</span>`;
+      successDiv.style.display = 'block';
+      document.getElementById('campania-nombre').value = '';
+      setTimeout(() => { goStep(0); }, 2000);
+    } else {
+      errorDiv.textContent = '✗ Error: ' + (result.error || 'No se pudo crear');
+      errorDiv.style.display = 'block';
+    }
+  } catch (err) {
+    console.error('Create campaign error:', err);
+    errorDiv.textContent = '✗ Error: ' + err.message;
+    errorDiv.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Crear campaña';
+  }
+}
+
+// Initialize
+initLoginScreen();
+</script>
+
+</body>
+</html>

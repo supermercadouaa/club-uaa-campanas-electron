@@ -1,0 +1,28 @@
+{
+  "appId": "com.clubuaa.campanas",
+  "productName": "Club UAA Campañas",
+  "directories": {
+    "buildResources": "assets",
+    "output": "dist-app"
+  },
+  "files": [
+    "dist/**/*",
+    "node_modules/**/*",
+    "package.json"
+  ],
+  "win": {
+    "target": [
+      {
+        "target": "nsis",
+        "arch": ["x64"]
+      }
+    ],
+    "icon": "assets/icon.ico"
+  },
+  "nsis": {
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true,
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true
+  }
+}
