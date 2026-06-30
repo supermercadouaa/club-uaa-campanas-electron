@@ -969,7 +969,12 @@ function validateAndGoStep(n) {
 }
 
 function goStep(n) {
-  if (n > maxStep && n !== 0) return;
+  console.log(`goStep(${n}), maxStep=${maxStep}, selectedTemplate=${selectedTemplate}`);
+
+  if (n > maxStep && n !== 0) {
+    console.log(`Blocked: ${n} > ${maxStep}`);
+    return;
+  }
 
   if (n === 1) { renderTemplates(); renderVariablesForm(); renderTemplatePreview(); }
   if (n === 2) { previewIdx = 0; renderPreviewMsg(); }
@@ -1160,11 +1165,18 @@ function switchMenu(menu) {
   document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
 
   if (menu === 'crear') {
-    document.getElementById('menu-enviadas-section').style.display = 'none';
+    const enviadas = document.getElementById('menu-enviadas-section');
+    enviadas.style.display = 'none';
+    enviadas.style.flex = 'unset';
+    enviadas.style.flexDirection = 'unset';
+
     document.getElementById('step-0').style.display = 'block';
     document.getElementById('step-0').classList.add('active');
   } else {
-    document.getElementById('menu-enviadas-section').style.display = 'block';
+    const enviadas = document.getElementById('menu-enviadas-section');
+    enviadas.style.display = 'flex';
+    enviadas.style.flex = '1';
+    enviadas.style.flexDirection = 'column';
     console.log('Loading campaigns for user:', currentUser?.id);
     loadCampaigns();
   }
