@@ -83,8 +83,9 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .actions-row .btn { flex: 1; }
 .actions-row .btn-outline { }
 .actions-row .btn-primary { }
-.menu-item:hover { background: rgba(37, 211, 102, 0.08); border-color: rgba(37, 211, 102, 0.2); }
-.menu-item.active { background: rgba(37, 211, 102, 0.1); border-color: rgba(37, 211, 102, 0.3); color: var(--wa); }
+.menu-item { background: transparent; border: 1px solid transparent; color: var(--text); font-weight: 500; }
+.menu-item:hover { background: rgba(37, 211, 102, 0.08); border-color: rgba(37, 211, 102, 0.2); color: var(--wa); }
+.menu-item.menu-item-active { background: rgba(37, 211, 102, 0.1); border: 1px solid rgba(37, 211, 102, 0.3); color: var(--wa); font-weight: 600; }
 table tbody tr { border-bottom: 1px solid var(--border); transition: background .2s; }
 table tbody tr:hover { background: rgba(54, 1, 95, 0.3); }
 table td { padding: 12px; font-size: 13px; }
@@ -197,6 +198,7 @@ table td { padding: 12px; font-size: 13px; }
 <div id="app-screen" style="display:none;">
   <header class="header">
     <div class="logo">
+      <button onclick="toggleSidebar()" style="background: transparent; border: none; color: var(--text); cursor: pointer; font-size: 18px; padding: 0 8px; display: flex; align-items: center;">☰</button>
       <img src="logo.png" alt="Club UAA" style="height: 44px; width: auto; object-fit: contain;">
       <span class="logo-title">Campañas Super UAA v2</span>
     </div>
@@ -221,10 +223,10 @@ table td { padding: 12px; font-size: 13px; }
       </div>
 
       <nav style="flex: 1; display: flex; flex-direction: column; gap: 8px; padding: 0 12px;">
-        <button onclick="switchMenu('crear')" id="menu-crear" class="menu-item active" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: rgba(37, 211, 102, 0.1); border: 1px solid rgba(37, 211, 102, 0.3); border-radius: 8px; color: var(--wa); cursor: pointer; font-weight: 600; font-size: 14px; transition: all .2s; width: 100%; text-align: left; font-family: 'DM Sans', sans-serif;">
+        <button onclick="switchMenu('crear')" id="menu-crear" class="menu-item menu-item-active" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; cursor: pointer; font-size: 14px; transition: all .2s; width: 100%; text-align: left; font-family: 'DM Sans', sans-serif;">
           <span style="font-size: 16px;">📝</span> Crear campaña
         </button>
-        <button onclick="switchMenu('enviadas')" id="menu-enviadas" class="menu-item" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: transparent; border: 1px solid transparent; border-radius: 8px; color: var(--text); cursor: pointer; font-weight: 500; font-size: 14px; transition: all .2s; width: 100%; text-align: left; font-family: 'DM Sans', sans-serif;">
+        <button onclick="switchMenu('enviadas')" id="menu-enviadas" class="menu-item" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; cursor: pointer; font-font-size: 14px; transition: all .2s; width: 100%; text-align: left; font-family: 'DM Sans', sans-serif;">
           <span style="font-size: 16px;">📊</span> Campañas enviadas
         </button>
       </nav>
@@ -361,11 +363,32 @@ table td { padding: 12px; font-size: 13px; }
   </main>
 
       <!-- CAMPAÑAS ENVIADAS SECTION -->
-      <div id="menu-enviadas-section" style="display: none; padding: 40px; overflow-y: auto; flex: 1;">
-        <div class="panel" style="margin-bottom: 20px;">
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
-            <div class="panel-title">Historial de campañas</div>
-            <button class="btn btn-outline" onclick="reloadCampaigns()" style="padding: 6px 12px; font-size: 12px;">Actualizar</button>
+      <div id="menu-enviadas-section" style="display: none; padding: 32px 40px; overflow-y: auto; flex: 1; display: flex; flex-direction: column;">
+        <!-- Header con filtros -->
+        <div style="margin-bottom: 24px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+            <h2 style="font-size: 18px; font-weight: 700; color: #FFFFFF; margin: 0;">Historial de campañas</h2>
+            <button class="btn btn-outline" onclick="reloadCampaigns()" style="padding: 6px 12px; font-size: 12px;">↻ Actualizar</button>
+          </div>
+
+          <!-- Buscador y filtros -->
+          <div style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 12px;">
+            <input type="text" id="search-campanas" placeholder="Buscar por nombre..." onkeyup="filterCampaigns()" style="background: var(--surface2); border: 1px solid var(--border2); border-radius: 6px; padding: 10px 14px; color: #FFF; font-size: 13px; font-family: 'DM Sans';">
+
+            <input type="date" id="filter-date-from" onchange="filterCampaigns()" style="background: var(--surface2); border: 1px solid var(--border2); border-radius: 6px; padding: 10px 14px; color: #FFF; font-size: 13px; font-family: 'DM Sans';">
+
+            <input type="date" id="filter-date-to" onchange="filterCampaigns()" style="background: var(--surface2); border: 1px solid var(--border2); border-radius: 6px; padding: 10px 14px; color: #FFF; font-size: 13px; font-family: 'DM Sans';">
+
+            <button class="btn btn-outline" onclick="clearFilters()" style="padding: 8px 12px; font-size: 12px;">Limpiar</button>
+          </div>
+        </div>
+
+        <!-- Tabla -->
+        <div class="panel" style="margin-bottom: 20px; flex: 1; display: flex; flex-direction: column;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+            <div style="font-size: 12px; color: var(--muted); font-weight: 600;">
+              <span id="campaigns-count">0</span> campañas
+            </div>
           </div>
 
           <div id="campaigns-loading" style="text-align: center; padding: 40px; color: var(--muted);">
@@ -1122,15 +1145,17 @@ async function handleCreateCampaign() {
 // ============================================================================
 
 let currentMenu = 'crear';
+let allCampaigns = [];
+let sidebarVisible = true;
 
 function switchMenu(menu) {
   if (menu === currentMenu) return;
 
   currentMenu = menu;
 
-  // Update menu buttons
-  document.querySelectorAll('.menu-item').forEach(btn => btn.classList.remove('active'));
-  document.getElementById(`menu-${menu}`).classList.add('active');
+  // Update menu buttons - remove active class from all, add to selected
+  document.querySelectorAll('.menu-item').forEach(btn => btn.classList.remove('menu-item-active'));
+  document.getElementById(`menu-${menu}`).classList.add('menu-item-active');
 
   // Show/hide sections
   document.getElementById('steps-nav').style.display = menu === 'crear' ? 'flex' : 'none';
@@ -1142,6 +1167,7 @@ function switchMenu(menu) {
     document.getElementById('step-0').classList.add('active');
   } else {
     document.getElementById('menu-enviadas-section').style.display = 'block';
+    console.log('Loading campaigns for user:', currentUser?.id);
     loadCampaigns();
   }
 }
@@ -1156,40 +1182,103 @@ async function loadCampaigns() {
   empty.style.display = 'none';
 
   try {
-    const result = await window.electron.api.dbGetCampaigns({ id_usuario: currentUser.id });
+    console.log('Fetching campaigns for user ID:', currentUser?.id);
+    const result = await window.electron.api.dbGetCampaigns({ id_usuario: String(currentUser.id) });
 
-    if (!result.success || !result.campaigns || result.campaigns.length === 0) {
+    console.log('API Response:', result);
+
+    if (!result.success) {
+      console.error('API error:', result.error);
+      loading.innerHTML = `<div style="color: var(--danger);">✗ Error: ${result.error || 'Unknown error'}</div>`;
+      loading.style.display = 'block';
+      return;
+    }
+
+    if (!result.campaigns || result.campaigns.length === 0) {
+      console.log('No campaigns found');
       empty.style.display = 'block';
       loading.style.display = 'none';
       return;
     }
 
-    const tbody = document.getElementById('campaigns-tbody');
-    tbody.innerHTML = '';
+    // Store all campaigns for filtering
+    allCampaigns = result.campaigns;
+    console.log('Loaded campaigns:', allCampaigns);
 
-    result.campaigns.forEach((campaign, idx) => {
-      const row = document.createElement('tr');
-      const createdDate = new Date(campaign.fecha_creacion || Date.now()).toLocaleDateString('es-AR');
-
-      row.innerHTML = `
-        <td><span style="font-family: 'DM Mono', monospace; color: var(--muted);">${campaign.id}</span></td>
-        <td><strong>${campaign.nombre}</strong></td>
-        <td>${campaign.plantilla_meta || '—'}</td>
-        <td style="text-align: right;"><strong>${campaign.total_contactos}</strong></td>
-        <td>${createdDate}</td>
-        <td style="text-align: center;">
-          <button class="btn btn-outline" style="padding: 4px 8px; font-size: 11px;" onclick="viewCampaignDetails(${campaign.id})">Ver</button>
-        </td>
-      `;
-      tbody.appendChild(row);
-    });
-
+    renderCampaigns(allCampaigns);
     container.style.display = 'block';
     loading.style.display = 'none';
   } catch (err) {
     console.error('Load campaigns error:', err);
-    loading.innerHTML = `<div style="color: var(--danger);">✗ Error al cargar: ${err.message}</div>`;
+    loading.innerHTML = `<div style="color: var(--danger);">✗ Error: ${err.message}</div>`;
+    loading.style.display = 'block';
   }
+}
+
+function renderCampaigns(campaigns) {
+  const tbody = document.getElementById('campaigns-tbody');
+  tbody.innerHTML = '';
+
+  campaigns.forEach((campaign) => {
+    const row = document.createElement('tr');
+    const createdDate = new Date(campaign.fecha_creacion || campaign.created_at || Date.now()).toLocaleDateString('es-AR');
+
+    row.innerHTML = `
+      <td><span style="font-family: 'DM Mono', monospace; color: var(--muted);">${campaign.id}</span></td>
+      <td><strong>${campaign.nombre}</strong></td>
+      <td>${campaign.plantilla_meta || '—'}</td>
+      <td style="text-align: right;"><strong>${campaign.total_contactos}</strong></td>
+      <td><span style="font-size: 12px; color: var(--muted);">${createdDate}</span></td>
+      <td style="text-align: center;">
+        <button class="btn btn-outline" style="padding: 4px 8px; font-size: 11px;" onclick="viewCampaignDetails(${campaign.id})">Ver</button>
+      </td>
+    `;
+    tbody.appendChild(row);
+  });
+
+  document.getElementById('campaigns-count').textContent = campaigns.length;
+}
+
+function filterCampaigns() {
+  const search = document.getElementById('search-campanas').value.toLowerCase();
+  const dateFrom = document.getElementById('filter-date-from').value;
+  const dateTo = document.getElementById('filter-date-to').value;
+
+  const filtered = allCampaigns.filter(campaign => {
+    const matchSearch = campaign.nombre.toLowerCase().includes(search) ||
+                       String(campaign.id).includes(search) ||
+                       (campaign.plantilla_meta || '').toLowerCase().includes(search);
+
+    let matchDate = true;
+    if (dateFrom || dateTo) {
+      const campDate = new Date(campaign.fecha_creacion || campaign.created_at);
+      if (dateFrom) matchDate = matchDate && campDate >= new Date(dateFrom);
+      if (dateTo) {
+        const toDate = new Date(dateTo);
+        toDate.setHours(23, 59, 59, 999);
+        matchDate = matchDate && campDate <= toDate;
+      }
+    }
+
+    return matchSearch && matchDate;
+  });
+
+  renderCampaigns(filtered);
+}
+
+function clearFilters() {
+  document.getElementById('search-campanas').value = '';
+  document.getElementById('filter-date-from').value = '';
+  document.getElementById('filter-date-to').value = '';
+  renderCampaigns(allCampaigns);
+}
+
+function toggleSidebar() {
+  const sidebar = document.querySelector('aside');
+  const mainContent = document.querySelector('[style*="flex: 1"]');
+
+  sidebarVisible = !sidebarVisible;
+  sidebar.style.display = sidebarVisible ? 'flex' : 'none';
 }
 
 function reloadCampaigns() {
