@@ -743,7 +743,7 @@ function parseXLSX(buf) {
 }
 
 function parseCSV(text) {
-  text = text.replace(/^[﻿￾]/g, '');
+  if (text.charCodeAt(0) === 0xFEFF) { text = text.slice(1); }
   const lines = text.split('\n').filter(l => l.trim());
   if (!lines.length) return;
   const firstLine = lines[0];
