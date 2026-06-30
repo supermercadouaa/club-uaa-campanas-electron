@@ -199,4 +199,32 @@ export function setupDatabaseHandlers() {
       return { success: false, error: (error as Error).message };
     }
   });
+
+  // Obtener campañas del usuario
+  ipcMain.handle('db:get-campaigns', async (event, { id_usuario }: { id_usuario: string }) => {
+    try {
+      if (!isConnected()) {
+        const connected = await initConnection();
+        if (!connected) {
+          return { success: false, error: 'Database not connected' };
+        }
+      }
+
+      const campaigns = await query<any>(
+        `SELECT id, id_usuario, nombre, plantilla_meta, total_contactos, estado, created_at as fecha_creacion
+         FROM mssql_web.dbo.super_campanias
+         WHERE id_usuario = @param1
+         ORDER BY created_at DESC`,
+        [id_usuario]
+      );
+
+      return {
+        success: true,
+        campaigns: campaigns || []
+      };
+    } catch (error) {
+      console.error('db:get-campaigns error:', error);
+      return { success: false, error: (error as Error).message };
+    }
+  });
 }
