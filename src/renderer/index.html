@@ -103,6 +103,18 @@ table td { padding: 12px; font-size: 13px; }
 </head>
 <body>
 
+<!-- UPDATE OVERLAY — shown before login while checking/downloading -->
+<div id="update-overlay" style="display:none; position:fixed; inset:0; background:var(--bg); z-index:9999; flex-direction:column; align-items:center; justify-content:center; gap:24px;">
+  <img src="/logo.png" alt="Club UAA" style="height: 64px; width: auto; opacity: 0.9;">
+  <div style="text-align:center;">
+    <div id="update-overlay-title" style="font-size:16px; font-weight:700; color:#FFFFFF; margin-bottom:8px;">Verificando actualizaciones...</div>
+    <div id="update-overlay-sub" style="font-size:13px; color:var(--muted);">Por favor esperá un momento</div>
+  </div>
+  <div style="width:200px; height:3px; background:var(--surface2); border-radius:99px; overflow:hidden;">
+    <div id="update-overlay-bar" style="height:100%; background:var(--wa); border-radius:99px; width:30%; transition:width .4s ease;"></div>
+  </div>
+</div>
+
 <!-- LOGIN SECTION -->
 <div id="login-screen" class="login-container">
   <div class="login-box">
@@ -225,9 +237,6 @@ table td { padding: 12px; font-size: 13px; }
         </div>
         <button class="btn-logout" onclick="handleEditCredentials()" style="padding: 6px 12px; font-size: 12px;">Editar credenciales</button>
         <button class="btn-logout" onclick="handleLogout()">Cerrar sesión</button>
-        <button id="update-btn" onclick="installUpdate()" style="display:none; background: var(--wa); color: #000; border: none; border-radius: 6px; padding: 6px 12px; font-size: 12px; font-weight: 600; cursor: pointer;">
-          ↓ Actualizar
-        </button>
       </div>
     </div>
   </header>
@@ -552,31 +561,67 @@ if (window.electron?.updater?.getAppVersion) {
   });
 }
 
-// Auto-updater — registrar al inicio, antes del login
-let pendingUpdate = { available: false, downloaded: false, version: null };
-if (window.electron?.updater) {
-  window.electron.updater.onUpdateAvailable((version) => {
-    pendingUpdate.available = true;
-    pendingUpdate.version = version;
-    showUpdateButton(false);
-  });
-  window.electron.updater.onUpdateDownloaded(() => {
-    pendingUpdate.downloaded = true;
-    showUpdateButton(true);
-  });
+// Auto-updater — gate pre-login: muestra overlay, instala si hay update, sino libera login
+(function setupUpdater() {
+  if (!window.electron?.updater) return;
+
+  const overlay = document.getElementById('update-overlay');
+  const overlayTitle = document.getElementById('update-overlay-title');
+  const overlaySub = document.getElementById('update-overlay-sub');
+  const overlayBar = document.getElementById('update-overlay-bar');
+
+  let updateFound = false;
+  let gateReleased = false;
+
+  function releaseGate() {
+    if (gateReleased) return;
+    gateReleased = true;
+    overlay.style.display = 'none';
+  }
+
+  function showOverlay() {
+    overlay.style.display = 'flex';
+  }
+
+  // Timeout de seguridad: si en 8s no hubo respuesta, liberar login
+  showOverlay();
+  const safetyTimeout = setTimeout(() => {
+    console.log('[updater] Timeout — releasing gate');
+    releaseGate();
+  }, 8000);
+
   window.electron.updater.onStatus((status) => {
     console.log('[updater status]', status);
-    const btn = document.getElementById('update-btn');
-    if (btn && status !== 'checking') btn.title = status;
+    if (status === 'up-to-date') {
+      clearTimeout(safetyTimeout);
+      releaseGate();
+    }
+    if (status && status.startsWith('error')) {
+      clearTimeout(safetyTimeout);
+      releaseGate();
+    }
   });
-}
-function showUpdateButton(downloaded) {
-  const btn = document.getElementById('update-btn');
-  if (!btn) return;
-  btn.style.display = 'inline-flex';
-  btn.title = pendingUpdate.version ? `Versión ${pendingUpdate.version} disponible` : '';
-  btn.textContent = downloaded ? '↓ Instalar actualización' : '↓ Actualizar';
-}
+
+  window.electron.updater.onUpdateAvailable((version) => {
+    console.log('[updater] Update available:', version);
+    updateFound = true;
+    clearTimeout(safetyTimeout);
+    overlayTitle.textContent = `Nueva versión disponible: v${version}`;
+    overlaySub.textContent = 'Descargando actualización...';
+    overlayBar.style.width = '60%';
+  });
+
+  window.electron.updater.onUpdateDownloaded(() => {
+    console.log('[updater] Downloaded — installing');
+    overlayTitle.textContent = 'Actualización lista';
+    overlaySub.textContent = 'Instalando y reiniciando...';
+    overlayBar.style.width = '100%';
+    // Instalar automáticamente sin preguntar
+    setTimeout(() => {
+      window.electron.updater.installUpdate();
+    }, 800);
+  });
+})();
 
 // ============================================================================
 // AUTH FUNCTIONS
@@ -706,9 +751,6 @@ async function checkAndShowNextScreen() {
   }
 }
 
-function installUpdate() {
-  window.electron?.updater?.installUpdate();
-}
 
 function handleLogout() {
   currentUser = null;
@@ -910,9 +952,6 @@ function detectAlias(fieldAliases, cols) {
 }
 
 function initApp() {
-  // Si ya había un update pendiente al momento del login, mostrarlo
-  if (pendingUpdate.available) showUpdateButton(pendingUpdate.downloaded);
-
   document.getElementById('file-input').addEventListener('change', e => handleFile(e.target.files[0]));
 
   const dropZone = document.getElementById('drop-zone');

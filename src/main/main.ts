@@ -34,11 +34,17 @@ function setupAutoUpdater() {
     mainWindow?.webContents.send('update:status', `error: ${err.message}`);
   });
 
-  // Verificar actualizaciones 5 segundos después de arrancar
-  setTimeout(() => {
+  const doCheck = () => {
     console.log('[updater] Triggering checkForUpdates...');
-    autoUpdater.checkForUpdates().catch(err => console.error('[updater] checkForUpdates failed:', err));
-  }, 5000);
+    autoUpdater.checkForUpdates().catch(err => {
+      console.error('[updater] checkForUpdates failed:', err);
+      mainWindow?.webContents.send('update:status', `error: ${err.message}`);
+    });
+  };
+
+  // Check immediately on startup (renderer shows overlay), then every 4 hours
+  doCheck();
+  setInterval(doCheck, 4 * 60 * 60 * 1000);
 }
 
 function createWindow() {
