@@ -28,6 +28,7 @@
   "publish": {
     "provider": "github",
     "owner": "supermercadouaa",
-    "repo": "club-uaa-campanas-electron"
+    "repo": "club-uaa-campanas-electron",
+    "releaseType": "release"
   }
 }
