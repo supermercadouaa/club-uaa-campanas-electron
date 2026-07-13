@@ -26,7 +26,7 @@ function setupAutoUpdater() {
 }
 
 function createWindow() {
-  const iconPath = path.join(__dirname, '../renderer/favicon.png');
+  const iconPath = path.join(__dirname, '../renderer/favicon.ico');
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
