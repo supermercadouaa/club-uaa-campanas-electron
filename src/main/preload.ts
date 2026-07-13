@@ -11,6 +11,13 @@ contextBridge.exposeInMainWorld('electron', {
     removeListener: (channel: string, func: (...args: unknown[]) => void) =>
       ipcRenderer.removeListener(channel, func),
   },
+  updater: {
+    onUpdateAvailable: (fn: (version: string) => void) =>
+      ipcRenderer.on('update:available', (_e, version) => fn(version)),
+    onUpdateDownloaded: (fn: () => void) =>
+      ipcRenderer.on('update:downloaded', () => fn()),
+    installUpdate: () => ipcRenderer.invoke('update:install'),
+  },
   api: {
     // Database
     dbCredentialsExist: () => ipcRenderer.invoke('db:credentials-exist'),

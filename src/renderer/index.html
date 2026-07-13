@@ -225,6 +225,9 @@ table td { padding: 12px; font-size: 13px; }
         </div>
         <button class="btn-logout" onclick="handleEditCredentials()" style="padding: 6px 12px; font-size: 12px;">Editar credenciales</button>
         <button class="btn-logout" onclick="handleLogout()">Cerrar sesión</button>
+        <button id="update-btn" onclick="installUpdate()" style="display:none; background: var(--wa); color: #000; border: none; border-radius: 6px; padding: 6px 12px; font-size: 12px; font-weight: 600; cursor: pointer;">
+          ↓ Actualizar
+        </button>
       </div>
     </div>
   </header>
@@ -670,6 +673,10 @@ async function checkAndShowNextScreen() {
   }
 }
 
+function installUpdate() {
+  window.electron?.updater?.installUpdate();
+}
+
 function handleLogout() {
   currentUser = null;
   document.getElementById('app-screen').style.display = 'none';
@@ -870,6 +877,18 @@ function detectAlias(fieldAliases, cols) {
 }
 
 function initApp() {
+  // Auto-updater
+  if (window.electron?.updater) {
+    window.electron.updater.onUpdateAvailable((version) => {
+      const btn = document.getElementById('update-btn');
+      if (btn) { btn.style.display = 'inline-flex'; btn.title = `Versión ${version} disponible — se descargó en segundo plano`; }
+    });
+    window.electron.updater.onUpdateDownloaded(() => {
+      const btn = document.getElementById('update-btn');
+      if (btn) btn.textContent = '↓ Instalar actualización';
+    });
+  }
+
   document.getElementById('file-input').addEventListener('change', e => handleFile(e.target.files[0]));
 
   const dropZone = document.getElementById('drop-zone');

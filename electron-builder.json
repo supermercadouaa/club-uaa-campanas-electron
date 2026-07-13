@@ -13,10 +13,21 @@
   "win": {
     "target": [
       {
-        "target": "portable",
+        "target": "nsis",
         "arch": ["x64"]
       }
     ],
     "icon": "assets/icon.ico"
+  },
+  "nsis": {
+    "oneClick": true,
+    "perMachine": false,
+    "allowToChangeInstallationDirectory": false,
+    "deleteAppDataOnUninstall": false
+  },
+  "publish": {
+    "provider": "github",
+    "owner": "supermercadouaa",
+    "repo": "club-uaa-campanas-electron"
   }
 }
