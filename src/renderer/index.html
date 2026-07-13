@@ -925,17 +925,7 @@ let maxStep = 0;
 let selectedTemplate = null;
 let customVars = {};
 
-const TEMPLATES = [
-  {
-    id: 'ofertas_3',
-    plantilla_meta: 'super_ofertas',
-    name: 'Ofertas Quincenales',
-    subtitle: '3 Destacados',
-    icon: '🎁',
-    body: `Hola {{nombre}},\n\n¡No te pierdas nuestras SUPER OFERTAS! Aprovechá nuestras ofertas destacadas:\n\n{{prod_1}}: {{precio_1}} → {{oferta_1}}\n{{prod_2}}: {{precio_2}} → {{oferta_2}}\n{{prod_3}}: {{precio_3}} → {{oferta_3}}\n\nVer el catálogo completo de ofertas: {{link_catálogo_personalizado}}\n\n¡Hasta pronto!\nEquipo Club UAA`,
-    variables: ['prod_1', 'precio_1', 'oferta_1', 'prod_2', 'precio_2', 'oferta_2', 'prod_3', 'precio_3', 'oferta_3', 'link_catálogo_personalizado']
-  }
-];
+let TEMPLATES = [];
 
 const FIELD_ALIASES = {
   telefono: ['telefono','celular','phone','whatsapp','x_telefono','x_celular','tel','movil','móvil','telefono_celular'],
@@ -951,7 +941,20 @@ function detectAlias(fieldAliases, cols) {
   return '';
 }
 
-function initApp() {
+async function initApp() {
+  // Cargar plantillas desde SQLite
+  try {
+    const loaded = await window.electron.api.templatesGet();
+    if (loaded && loaded.length > 0) {
+      TEMPLATES = loaded;
+      console.log(`[templates] Loaded ${TEMPLATES.length} template(s) from DB`);
+    } else {
+      console.warn('[templates] No templates returned from DB');
+    }
+  } catch (err) {
+    console.error('[templates] Failed to load from DB:', err);
+  }
+
   document.getElementById('file-input').addEventListener('change', e => handleFile(e.target.files[0]));
 
   const dropZone = document.getElementById('drop-zone');

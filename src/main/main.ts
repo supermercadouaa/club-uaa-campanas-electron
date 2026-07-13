@@ -2,6 +2,9 @@ import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
 import { autoUpdater } from 'electron-updater';
 import { setupDatabaseHandlers } from './ipc/database';
+import { setupTemplateHandlers } from './ipc/templates';
+import { getTemplatesDbPath } from './lib/config';
+import { openTemplatesDb, closeTemplatesDb } from './lib/templates-db';
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -72,8 +75,14 @@ function createWindow() {
 
 app.on('ready', () => {
   setupDatabaseHandlers();
+  setupTemplateHandlers();
+  openTemplatesDb(getTemplatesDbPath());
   createWindow();
   setupAutoUpdater();
+});
+
+app.on('before-quit', () => {
+  closeTemplatesDb();
 });
 
 app.on('window-all-closed', () => {
