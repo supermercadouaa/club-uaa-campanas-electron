@@ -86,6 +86,8 @@ ipcMain.handle('update:install', () => {
   autoUpdater.quitAndInstall();
 });
 
+ipcMain.handle('app:version', () => app.getVersion());
+
 // IPC Handlers (Phase 2+)
 ipcMain.handle('campaign:create', async (event, data) => {
   // To be implemented in Phase 3

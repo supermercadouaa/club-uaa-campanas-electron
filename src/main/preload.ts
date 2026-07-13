@@ -19,6 +19,7 @@ contextBridge.exposeInMainWorld('electron', {
     onStatus: (fn: (status: string) => void) =>
       ipcRenderer.on('update:status', (_e, status) => fn(status)),
     installUpdate: () => ipcRenderer.invoke('update:install'),
+    getAppVersion: () => ipcRenderer.invoke('app:version'),
   },
   api: {
     // Database

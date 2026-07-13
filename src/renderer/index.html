@@ -157,7 +157,7 @@ table td { padding: 12px; font-size: 13px; }
     <!-- LOGIN FORM -->
     <div id="login-section" style="display:none;">
       <div class="login-logo">
-        <img src="logo.png" alt="Club UAA">
+        <img src="/logo.png" alt="Club UAA">
         <div class="login-title">Campañas Club UAA</div>
         <div class="login-subtitle">Sistema de campañas por WhatsApp</div>
       </div>
@@ -213,7 +213,7 @@ table td { padding: 12px; font-size: 13px; }
           <line x1="3" y1="15" x2="17" y2="15"></line>
         </svg>
       </button>
-      <img src="logo.png" alt="Club UAA" style="height: 44px; width: auto; object-fit: contain;">
+      <img src="/logo.png" alt="Club UAA" style="height: 44px; width: auto; object-fit: contain;">
       <span class="logo-title">Campañas Super UAA</span>
     </div>
     <div class="header-actions">
@@ -251,8 +251,7 @@ table td { padding: 12px; font-size: 13px; }
       </nav>
 
       <div style="padding: 14px 16px; border-top: 1px solid var(--border); color: #AAAAAA; font-size: 11px; line-height: 1.6; margin-top: 14px;">
-        <div style="opacity: 0.7;">v2.0.0</div>
-        <div style="opacity: 0.7; margin-top: 4px;">UI Redesign</div>
+        <div id="sidebar-version" style="opacity: 0.7;">v—</div>
       </div>
     </aside>
 
@@ -544,6 +543,14 @@ table td { padding: 12px; font-size: 13px; }
 
 <script>
 let currentUser = null;
+
+// Versión de la app
+if (window.electron?.updater?.getAppVersion) {
+  window.electron.updater.getAppVersion().then(v => {
+    const el = document.getElementById('sidebar-version');
+    if (el) el.textContent = `v${v}`;
+  });
+}
 
 // Auto-updater — registrar al inicio, antes del login
 let pendingUpdate = { available: false, downloaded: false, version: null };
