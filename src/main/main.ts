@@ -9,20 +9,36 @@ function setupAutoUpdater() {
   autoUpdater.autoDownload = true;
   autoUpdater.autoInstallOnAppQuit = true;
 
+  autoUpdater.on('checking-for-update', () => {
+    console.log('[updater] Checking for update...');
+    mainWindow?.webContents.send('update:status', 'checking');
+  });
+
   autoUpdater.on('update-available', (info) => {
+    console.log('[updater] Update available:', info.version);
     mainWindow?.webContents.send('update:available', info.version);
   });
 
+  autoUpdater.on('update-not-available', (info) => {
+    console.log('[updater] No update available. Current:', info.version);
+    mainWindow?.webContents.send('update:status', 'up-to-date');
+  });
+
   autoUpdater.on('update-downloaded', () => {
+    console.log('[updater] Update downloaded, ready to install');
     mainWindow?.webContents.send('update:downloaded');
   });
 
   autoUpdater.on('error', (err) => {
-    console.error('Auto-updater error:', err.message);
+    console.error('[updater] Error:', err.message);
+    mainWindow?.webContents.send('update:status', `error: ${err.message}`);
   });
 
   // Verificar actualizaciones 5 segundos después de arrancar
-  setTimeout(() => autoUpdater.checkForUpdates(), 5000);
+  setTimeout(() => {
+    console.log('[updater] Triggering checkForUpdates...');
+    autoUpdater.checkForUpdates().catch(err => console.error('[updater] checkForUpdates failed:', err));
+  }, 5000);
 }
 
 function createWindow() {

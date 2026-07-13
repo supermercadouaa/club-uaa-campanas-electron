@@ -557,6 +557,11 @@ if (window.electron?.updater) {
     pendingUpdate.downloaded = true;
     showUpdateButton(true);
   });
+  window.electron.updater.onStatus((status) => {
+    console.log('[updater status]', status);
+    const btn = document.getElementById('update-btn');
+    if (btn && status !== 'checking') btn.title = status;
+  });
 }
 function showUpdateButton(downloaded) {
   const btn = document.getElementById('update-btn');
