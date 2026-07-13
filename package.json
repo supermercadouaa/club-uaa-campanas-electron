@@ -1,6 +1,6 @@
 {
   "name": "club-uaa-campanas-electron",
-  "version": "0.1.0",
+  "version": "2.0.0",
   "description": "Electron campaign manager for Club UAA",
   "main": "./dist/main/main.js",
   "homepage": "./",
@@ -10,7 +10,7 @@
     "vite": "vite --port 3000",
     "tsc": "tsc src/main/**/*.ts --outDir dist --module commonjs",
     "electron": "electron .",
-    "build": "tsc && vite build",
+    "build": "tsc -p . --skipLibCheck && vite build",
     "pack": "electron-builder --dir",
     "dist": "npm run build && electron-builder"
   },
