@@ -545,6 +545,27 @@ table td { padding: 12px; font-size: 13px; }
 <script>
 let currentUser = null;
 
+// Auto-updater — registrar al inicio, antes del login
+let pendingUpdate = { available: false, downloaded: false, version: null };
+if (window.electron?.updater) {
+  window.electron.updater.onUpdateAvailable((version) => {
+    pendingUpdate.available = true;
+    pendingUpdate.version = version;
+    showUpdateButton(false);
+  });
+  window.electron.updater.onUpdateDownloaded(() => {
+    pendingUpdate.downloaded = true;
+    showUpdateButton(true);
+  });
+}
+function showUpdateButton(downloaded) {
+  const btn = document.getElementById('update-btn');
+  if (!btn) return;
+  btn.style.display = 'inline-flex';
+  btn.title = pendingUpdate.version ? `Versión ${pendingUpdate.version} disponible` : '';
+  btn.textContent = downloaded ? '↓ Instalar actualización' : '↓ Actualizar';
+}
+
 // ============================================================================
 // AUTH FUNCTIONS
 // ============================================================================
@@ -877,17 +898,8 @@ function detectAlias(fieldAliases, cols) {
 }
 
 function initApp() {
-  // Auto-updater
-  if (window.electron?.updater) {
-    window.electron.updater.onUpdateAvailable((version) => {
-      const btn = document.getElementById('update-btn');
-      if (btn) { btn.style.display = 'inline-flex'; btn.title = `Versión ${version} disponible — se descargó en segundo plano`; }
-    });
-    window.electron.updater.onUpdateDownloaded(() => {
-      const btn = document.getElementById('update-btn');
-      if (btn) btn.textContent = '↓ Instalar actualización';
-    });
-  }
+  // Si ya había un update pendiente al momento del login, mostrarlo
+  if (pendingUpdate.available) showUpdateButton(pendingUpdate.downloaded);
 
   document.getElementById('file-input').addEventListener('change', e => handleFile(e.target.files[0]));
 
