@@ -87,7 +87,7 @@ export async function query<T>(sql: string, params: any[] = []): Promise<T[]> {
 
     // Agregar parámetros si existen
     params.forEach((param, index) => {
-      request.addParameter(`param${index + 1}`, TYPES.NVarChar, param);
+      request.addParameter(`param${index + 1}`, TYPES.NVarChar, param === null ? null : String(param));
     });
 
     request.on('row', (columns: any) => {

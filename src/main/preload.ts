@@ -21,6 +21,7 @@ contextBridge.exposeInMainWorld('electron', {
     dbChangePassword: (email: string, password: string) => ipcRenderer.invoke('db:change-password', email, password),
     dbCreateCampaign: (data: any) => ipcRenderer.invoke('db:create-campaign', data),
     dbGetCampaigns: (data: any) => ipcRenderer.invoke('db:get-campaigns', data),
+    dbGetCampaignDetail: (data: any) => ipcRenderer.invoke('db:get-campaign-detail', data),
     dbClose: () => ipcRenderer.invoke('db:close'),
   },
 });

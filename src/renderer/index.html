@@ -58,6 +58,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .form-label { display: block; font-size: 13px; color: #FFFFFF; margin-bottom: 10px; font-weight: 600; }
 .form-input { width: 100%; background: var(--surface2); border: 1px solid var(--border2); border-radius: var(--radius); padding: 12px 16px; color: #FFFFFF; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; transition: all .2s; outline: none; }
 .form-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(54,1,95,.1); }
+button:focus-visible, .menu-item:focus-visible, .step-tab:focus-visible, a:focus-visible { outline: 2px solid var(--wa); outline-offset: 2px; }
 .form-input::placeholder { color: #888888; }
 .btn { padding: 12px 24px; border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all .2s; display: inline-flex; align-items: center; gap: 8px; justify-content: center; }
 .btn-primary { background: linear-gradient(135deg, var(--wa) 0%, var(--wa2) 100%); color: #FFFFFF; box-shadow: 0 4px 12px rgba(37,211,102,.3); }
@@ -70,14 +71,14 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .upload-zone { border: 2px dashed var(--border2); border-radius: var(--radius-lg); padding: 48px 32px; text-align: center; cursor: pointer; transition: all .2s; position: relative; background: rgba(54,1,95,.02); }
 .upload-zone:hover, .upload-zone.drag { border-color: var(--primary); background: rgba(54,1,95,.08); }
 .upload-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-.upload-icon { font-size: 32px; margin-bottom: 12px; }
+.upload-icon { display: flex; align-items: center; justify-content: center; color: var(--primary); margin-bottom: 12px; }
 .upload-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; color: #FFFFFF; }
 .upload-sub { font-size: 13px; color: #999999; font-weight: 500; }
 .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-bottom: 20px; }
 .stat-card { background: var(--surface2); border-radius: var(--radius); padding: 14px 16px; }
 .stat-label { font-size: 11px; color: #AAAAAA; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 4px; font-weight: 600; }
 .stat-value { font-size: 24px; font-weight: 700; font-family: 'DM Mono', monospace; color: #FFFFFF; }
-.section { display: none; padding: 32px 40px; }
+.section { display: none; padding: 32px 40px; max-width: 900px; margin: 0 auto; }
 .section.active { display: block; }
 .actions-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 20px; }
 .actions-row .btn { flex: 1; }
@@ -86,13 +87,18 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .menu-item { background: transparent; border: 1px solid transparent; color: var(--text); font-weight: 500; }
 .menu-item:hover { background: rgba(37, 211, 102, 0.08); border-color: rgba(37, 211, 102, 0.2); color: var(--wa); }
 .menu-item.menu-item-active { background: rgba(37, 211, 102, 0.1); border: 1px solid rgba(37, 211, 102, 0.3); color: var(--wa); font-weight: 600; }
+.icon-btn { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; border-radius: 8px; color: var(--text); cursor: pointer; transition: background .2s; flex-shrink: 0; }
+.icon-btn:hover { background: rgba(255, 255, 255, .08); }
+.icon-btn svg { display: block; }
 table tbody tr { border-bottom: 1px solid var(--border); transition: background .2s; }
 table tbody tr:hover { background: rgba(54, 1, 95, 0.3); }
 table td { padding: 12px; font-size: 13px; }
 .campaign-row-details { font-size: 12px; color: var(--muted); margin-top: 4px; }
-.status-badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+.status-badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; text-transform: capitalize; }
 .status-badge.pending { background: rgba(255, 184, 0, 0.1); color: var(--warning); }
 .status-badge.sent { background: rgba(37, 211, 102, 0.1); color: var(--success); }
+.status-badge.failed, .status-badge.error { background: rgba(255, 68, 68, 0.1); color: var(--danger); }
+.status-badge.default { background: rgba(170, 170, 170, 0.12); color: #AAAAAA; }
   </style>
 </head>
 <body>
@@ -107,7 +113,9 @@ table td { padding: 12px; font-size: 13px; }
           <div class="login-title" style="font-size:16px;margin:0;margin-bottom:4px;">Configuración BD</div>
           <div class="login-subtitle" style="font-size:11px;">SQL Server</div>
         </div>
-        <button onclick="closeConfigSection()" style="background: transparent; border: none; color: #999; font-size: 24px; cursor: pointer; padding: 0; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">×</button>
+        <button onclick="closeConfigSection()" class="icon-btn" style="color: #999;" aria-label="Cerrar">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="4" y1="4" x2="16" y2="16"></line><line x1="16" y1="4" x2="4" y2="16"></line></svg>
+        </button>
       </div>
 
       <div id="config-error" class="error-msg" style="display:none; margin-bottom: 12px;"></div>
@@ -198,9 +206,15 @@ table td { padding: 12px; font-size: 13px; }
 <div id="app-screen" style="display:none;">
   <header class="header">
     <div class="logo">
-      <button onclick="toggleSidebar()" style="background: transparent; border: none; color: var(--text); cursor: pointer; font-size: 18px; padding: 0 8px; display: flex; align-items: center;">☰</button>
+      <button onclick="toggleSidebar()" class="icon-btn" aria-label="Mostrar u ocultar menú lateral" title="Mostrar/ocultar menú">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <line x1="3" y1="5" x2="17" y2="5"></line>
+          <line x1="3" y1="10" x2="17" y2="10"></line>
+          <line x1="3" y1="15" x2="17" y2="15"></line>
+        </svg>
+      </button>
       <img src="logo.png" alt="Club UAA" style="height: 44px; width: auto; object-fit: contain;">
-      <span class="logo-title">Campañas Super UAA v2</span>
+      <span class="logo-title">Campañas Super UAA</span>
     </div>
     <div class="header-actions">
       <div class="user-info" id="user-display">Usuario: -</div>
@@ -217,21 +231,23 @@ table td { padding: 12px; font-size: 13px; }
 
   <!-- SIDEBAR MENU -->
   <div style="display: flex; height: calc(100vh - 64px);">
-    <aside style="width: 240px; background: var(--surface); border-right: 1px solid var(--border); padding: 24px 0; display: flex; flex-direction: column;">
-      <div style="padding: 0 16px; margin-bottom: 24px;">
-        <div style="font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: #AAAAAA; font-weight: 700; margin-bottom: 12px;">Menú</div>
+    <aside style="width: 240px; background: var(--surface); border-right: 1px solid var(--border); padding: 20px 0; display: flex; flex-direction: column;">
+      <div style="padding: 0 16px; margin-bottom: 14px;">
+        <div style="font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: #AAAAAA; font-weight: 700;">Menú</div>
       </div>
 
-      <nav style="flex: 1; display: flex; flex-direction: column; gap: 8px; padding: 0 12px;">
-        <button onclick="switchMenu('crear')" id="menu-crear" class="menu-item menu-item-active" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; cursor: pointer; font-size: 14px; transition: all .2s; width: 100%; text-align: left; font-family: 'DM Sans', sans-serif;">
-          <span style="font-size: 16px;">📝</span> Crear campaña
+      <nav style="flex: 1; display: flex; flex-direction: column; gap: 4px; padding: 0 16px;">
+        <button onclick="switchMenu('crear')" id="menu-crear" class="menu-item menu-item-active" style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; cursor: pointer; font-size: 14px; transition: all .2s; width: 100%; text-align: left; font-family: 'DM Sans', sans-serif;">
+          <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M11 2.5H5.5a1.5 1.5 0 0 0-1.5 1.5v12a1.5 1.5 0 0 0 1.5 1.5h9a1.5 1.5 0 0 0 1.5-1.5V7L11 2.5Z"></path><path d="M11 2.5V7h4.5"></path><path d="M7 11h6M7 14h6"></path></svg>
+          Crear campaña
         </button>
-        <button onclick="switchMenu('enviadas')" id="menu-enviadas" class="menu-item" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; cursor: pointer; font-font-size: 14px; transition: all .2s; width: 100%; text-align: left; font-family: 'DM Sans', sans-serif;">
-          <span style="font-size: 16px;">📊</span> Campañas enviadas
+        <button onclick="switchMenu('enviadas')" id="menu-enviadas" class="menu-item" style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; cursor: pointer; font-size: 14px; transition: all .2s; width: 100%; text-align: left; font-family: 'DM Sans', sans-serif;">
+          <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><rect x="3" y="3" width="14" height="14" rx="1.5"></rect><path d="M6.5 13V9.5M10 13V6.5M13.5 13v-4"></path></svg>
+          Campañas enviadas
         </button>
       </nav>
 
-      <div style="padding: 12px 16px; border-top: 1px solid var(--border); color: #AAAAAA; font-size: 11px; line-height: 1.6;">
+      <div style="padding: 14px 16px; border-top: 1px solid var(--border); color: #AAAAAA; font-size: 11px; line-height: 1.6; margin-top: 14px;">
         <div style="opacity: 0.7;">v2.0.0</div>
         <div style="opacity: 0.7; margin-top: 4px;">UI Redesign</div>
       </div>
@@ -253,7 +269,9 @@ table td { padding: 12px; font-size: 13px; }
         <div class="panel-title">Archivo de contactos</div>
         <div class="upload-zone" id="drop-zone">
           <input type="file" id="file-input" accept=".xlsx,.xls,.csv">
-          <div class="upload-icon">📊</div>
+          <div class="upload-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 8l5-5 5 5"></path><path d="M4 16v2.5A2.5 2.5 0 0 0 6.5 21h11a2.5 2.5 0 0 0 2.5-2.5V16"></path></svg>
+          </div>
           <div class="upload-title">Arrastrá o hacé clic para subir</div>
           <div class="upload-sub">Excel o CSV con nombres y teléfonos</div>
         </div>
@@ -270,9 +288,9 @@ table td { padding: 12px; font-size: 13px; }
     <!-- STEP 1: DISEÑAR -->
     <div class="section" id="step-1">
       <div style="background: rgba(54,1,95,.05); border: 1px solid rgba(54,1,95,.2); border-radius: 8px; padding: 12px 16px; font-size: 13px; margin-bottom: 16px; color: #8464B8;">
-        💡 Seleccioná una plantilla y personalizá agregando tus variables (link, precio, etc.)
+        💡 Personalizá el mensaje agregando tus variables (link, precio, etc.)
       </div>
-      <div class="panel">
+      <div class="panel" id="templates-panel" style="display: none;">
         <div class="panel-title">Plantillas disponibles</div>
         <div id="templates-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;"></div>
       </div>
@@ -298,7 +316,9 @@ table td { padding: 12px; font-size: 13px; }
       <!-- PASTE MODAL -->
       <div id="paste-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:2000;align-items:center;justify-content:center;">
         <div class="login-box" style="position:relative;width:90%;max-width:500px;padding:24px;">
-          <button onclick="closePasteModal()" style="position:absolute;top:16px;right:16px;background:transparent;border:none;color:#999;font-size:24px;cursor:pointer;padding:0;width:24px;height:24px;display:flex;align-items:center;justify-content:center;">×</button>
+          <button onclick="closePasteModal()" class="icon-btn" style="position:absolute;top:14px;right:14px;color:#999;" aria-label="Cerrar">
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="4" y1="4" x2="16" y2="16"></line><line x1="16" y1="4" x2="4" y2="16"></line></svg>
+          </button>
 
           <div style="margin-bottom:16px;">
             <div class="login-title" style="font-size:16px;margin:0;margin-bottom:4px;">Pegar datos de tabla</div>
@@ -368,7 +388,10 @@ table td { padding: 12px; font-size: 13px; }
         <div style="margin-bottom: 16px;">
           <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
             <h2 style="font-size: 16px; font-weight: 700; color: #FFFFFF; margin: 0;">Historial de campañas</h2>
-            <button class="btn btn-outline" onclick="reloadCampaigns()" style="padding: 6px 12px; font-size: 12px;">↻ Actualizar</button>
+            <button class="btn btn-outline" onclick="reloadCampaigns()" style="padding: 6px 12px; font-size: 12px;">
+              <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 9A6.5 6.5 0 1 0 15 13.5"></path><path d="M16.5 4.5V9H12"></path></svg>
+              Actualizar
+            </button>
           </div>
 
           <!-- Buscador y filtros -->
@@ -404,6 +427,7 @@ table td { padding: 12px; font-size: 13px; }
                   <th style="text-align: left; padding: 10px; font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .05em;">Plantilla</th>
                   <th style="text-align: right; padding: 10px; font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .05em;">Contactos</th>
                   <th style="text-align: left; padding: 10px; font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .05em;">Creada</th>
+                  <th style="text-align: left; padding: 10px; font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .05em;">Estado</th>
                   <th style="text-align: center; padding: 10px; font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .05em;">Acciones</th>
                 </tr>
               </thead>
@@ -413,7 +437,9 @@ table td { padding: 12px; font-size: 13px; }
           </div>
 
           <div id="campaigns-empty" style="text-align: center; padding: 20px; color: var(--muted); flex: 1; display: flex; align-items: center; justify-content: center; flex-direction: column; display: none;">
-            <div style="font-size: 32px; margin-bottom: 12px;">📭</div>
+            <div style="margin-bottom: 12px; color: var(--muted);">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"></rect><path d="M3 7l9 6 9-6"></path></svg>
+            </div>
             <div>No hay campañas enviadas aún</div>
           </div>
         </div>
@@ -421,10 +447,53 @@ table td { padding: 12px; font-size: 13px; }
     </div>
 </div>
 
+<!-- CAMPAIGN DETAIL MODAL -->
+<div id="campaign-detail-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:2500;align-items:center;justify-content:center;">
+  <div class="login-box" style="position:relative;width:90%;max-width:720px;max-height:85vh;padding:24px;display:flex;flex-direction:column;">
+    <button onclick="closeCampaignDetailModal()" class="icon-btn" style="position:absolute;top:14px;right:14px;color:#999;" aria-label="Cerrar">
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="4" y1="4" x2="16" y2="16"></line><line x1="16" y1="4" x2="4" y2="16"></line></svg>
+    </button>
+
+    <div style="margin-bottom: 16px;">
+      <div class="login-title" style="font-size:16px;margin:0;margin-bottom:4px;" id="detail-campaign-nombre">Detalle de campaña</div>
+      <div class="login-subtitle" style="font-size:11px;">Resumen y listado de envíos</div>
+    </div>
+
+    <div id="detail-loading" style="text-align: center; padding: 24px; color: var(--muted);">Cargando detalle...</div>
+
+    <div id="detail-content" style="display:none; flex: 1; overflow: hidden; display: flex; flex-direction: column;">
+      <!-- Resumen -->
+      <div class="stats-row" id="detail-stats-row" style="margin-bottom: 16px;"></div>
+
+      <!-- Tabla de envíos -->
+      <div style="font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px;">
+        Envíos (<span id="detail-envios-count">0</span>)
+      </div>
+      <div style="flex: 1; overflow: auto; border: 1px solid var(--border); border-radius: 8px;">
+        <table style="width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr style="border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--surface);">
+              <th style="text-align: left; padding: 8px 10px; font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .05em;">Nombre</th>
+              <th style="text-align: left; padding: 8px 10px; font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .05em;">Teléfono</th>
+              <th style="text-align: left; padding: 8px 10px; font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .05em;">Producto</th>
+              <th style="text-align: left; padding: 8px 10px; font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .05em;">Estado</th>
+            </tr>
+          </thead>
+          <tbody id="detail-envios-tbody" style="font-size: 13px;"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="detail-error" class="error-msg" style="display:none;margin-top:12px;"></div>
+  </div>
+</div>
+
 <!-- GLOBAL CONFIG MODAL (appears on top of any screen) -->
 <div id="config-modal-global" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:3000;align-items:center;justify-content:center;">
   <div class="login-box" style="position:relative;width:85%;max-width:360px;padding:24px;">
-    <button onclick="closeConfigModal()" style="position:absolute;top:16px;right:16px;background:transparent;border:none;color:#999;font-size:24px;cursor:pointer;padding:0;width:24px;height:24px;display:flex;align-items:center;justify-content:center;">×</button>
+    <button onclick="closeConfigModal()" class="icon-btn" style="position:absolute;top:14px;right:14px;color:#999;" aria-label="Cerrar">
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="4" y1="4" x2="16" y2="16"></line><line x1="16" y1="4" x2="4" y2="16"></line></svg>
+    </button>
 
     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
       <div>
@@ -874,6 +943,8 @@ function renderStep0() {
 }
 
 function renderTemplates() {
+  document.getElementById('templates-panel').style.display = TEMPLATES.length > 1 ? 'block' : 'none';
+
   const grid = document.getElementById('templates-grid');
   grid.innerHTML = TEMPLATES.map(t => `
     <div onclick="selectTemplate('${t.id}')" style="background: var(--surface2); border: 2px solid ${selectedTemplate === t.id ? 'var(--wa)' : 'var(--border2)'}; border-radius: 8px; padding: 16px; cursor: pointer; transition: all .2s;">
@@ -969,10 +1040,7 @@ function validateAndGoStep(n) {
 }
 
 function goStep(n) {
-  console.log(`goStep(${n}), maxStep=${maxStep}, selectedTemplate=${selectedTemplate}`);
-
   if (n > maxStep && n !== 0) {
-    console.log(`Blocked: ${n} > ${maxStep}`);
     return;
   }
 
@@ -1100,6 +1168,7 @@ async function handleCreateCampaign() {
 
   try {
     const envios = data.map(row => ({
+      id_cliente: row.n_codcliente || row.id_cliente || null,
       nombre: row.nombre,
       telefono: row.telefono,
       prod_1: customVars['prod_1'] || null,
@@ -1120,6 +1189,7 @@ async function handleCreateCampaign() {
       nombre: String(nombre),
       plantilla_meta: String(template.plantilla_meta),
       id_usuario: String(currentUser.id),
+      creado_por: (currentUser.email || '').split('@')[0],
       total_contactos: String(data.length),
       envios
     });
@@ -1162,21 +1232,16 @@ function switchMenu(menu) {
 
   // Show/hide sections
   document.getElementById('steps-nav').style.display = menu === 'crear' ? 'flex' : 'none';
-  document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+
+  const mainEl = document.querySelector('main.main');
+  const enviadas = document.getElementById('menu-enviadas-section');
 
   if (menu === 'crear') {
-    const enviadas = document.getElementById('menu-enviadas-section');
+    mainEl.style.display = '';
     enviadas.style.display = 'none';
-    enviadas.style.flex = 'unset';
-    enviadas.style.flexDirection = 'unset';
-
-    document.getElementById('step-0').style.display = 'block';
-    document.getElementById('step-0').classList.add('active');
   } else {
-    const enviadas = document.getElementById('menu-enviadas-section');
+    mainEl.style.display = 'none';
     enviadas.style.display = 'flex';
-    enviadas.style.flex = '1';
-    enviadas.style.flexDirection = 'column';
     console.log('Loading campaigns for user:', currentUser?.id);
     loadCampaigns();
   }
@@ -1234,12 +1299,16 @@ function renderCampaigns(campaigns) {
     row.style.borderBottom = '1px solid rgba(90, 62, 127, 0.3)';
     const createdDate = new Date(campaign.fecha_creacion || campaign.created_at || Date.now()).toLocaleDateString('es-AR');
 
+    const estado = campaign.estado || 'pending';
+    const estadoClass = ['pending', 'sent', 'failed', 'error'].includes(estado) ? estado : 'default';
+
     row.innerHTML = `
       <td style="padding: 10px;"><span style="font-family: 'DM Mono', monospace; color: var(--muted); font-size: 12px;">${campaign.id}</span></td>
       <td style="padding: 10px;"><strong style="color: #FFF;">${campaign.nombre}</strong></td>
       <td style="padding: 10px; font-size: 12px;">${campaign.plantilla_meta || '—'}</td>
       <td style="padding: 10px; text-align: right; font-size: 12px;"><strong>${campaign.total_contactos}</strong></td>
       <td style="padding: 10px; font-size: 12px; color: var(--muted);">${createdDate}</td>
+      <td style="padding: 10px;"><span class="status-badge ${estadoClass}">${estado}</span></td>
       <td style="padding: 10px; text-align: center;">
         <button class="btn btn-outline" style="padding: 4px 8px; font-size: 11px;" onclick="viewCampaignDetails(${campaign.id})">Ver</button>
       </td>
@@ -1296,8 +1365,70 @@ function reloadCampaigns() {
   loadCampaigns();
 }
 
-function viewCampaignDetails(campaignId) {
-  alert(`Detalles de campaña ${campaignId} - Próxima versión con modal de detalles`);
+async function viewCampaignDetails(campaignId) {
+  const modal = document.getElementById('campaign-detail-modal');
+  const loading = document.getElementById('detail-loading');
+  const content = document.getElementById('detail-content');
+  const errorDiv = document.getElementById('detail-error');
+
+  modal.style.display = 'flex';
+  loading.style.display = 'block';
+  content.style.display = 'none';
+  errorDiv.style.display = 'none';
+  document.getElementById('detail-campaign-nombre').textContent = 'Detalle de campaña';
+
+  try {
+    const result = await window.electron.api.dbGetCampaignDetail({ id_campania: campaignId });
+
+    if (!result.success) {
+      errorDiv.textContent = `Error: ${result.error || 'No se pudo cargar el detalle'}`;
+      errorDiv.style.display = 'block';
+      loading.style.display = 'none';
+      return;
+    }
+
+    const campaign = result.campaign;
+    const envios = result.envios || [];
+    const estado = campaign.estado || 'pending';
+    const estadoClass = ['pending', 'sent', 'failed', 'error'].includes(estado) ? estado : 'default';
+    const createdDate = new Date(campaign.fecha_creacion).toLocaleDateString('es-AR');
+
+    document.getElementById('detail-campaign-nombre').textContent = campaign.nombre;
+
+    document.getElementById('detail-stats-row').innerHTML = `
+      <div class="stat-card"><div class="stat-label">Plantilla</div><div class="stat-value" style="font-size:15px;">${campaign.plantilla_meta || '—'}</div></div>
+      <div class="stat-card"><div class="stat-label">Contactos</div><div class="stat-value">${campaign.total_contactos}</div></div>
+      <div class="stat-card"><div class="stat-label">Creada</div><div class="stat-value" style="font-size:15px;">${createdDate}</div></div>
+      <div class="stat-card"><div class="stat-label">Estado</div><div class="stat-value" style="font-size:15px;"><span class="status-badge ${estadoClass}">${estado}</span></div></div>
+    `;
+
+    const tbody = document.getElementById('detail-envios-tbody');
+    tbody.innerHTML = envios.map(envio => {
+      const envioEstado = envio.status || 'pending';
+      const envioEstadoClass = ['pending', 'sent', 'failed', 'error'].includes(envioEstado) ? envioEstado : 'default';
+      return `
+        <tr style="border-bottom: 1px solid rgba(90, 62, 127, 0.3);">
+          <td style="padding: 8px 10px;"><strong style="color:#FFF;">${envio.nombre || '—'}</strong></td>
+          <td style="padding: 8px 10px; font-family: 'DM Mono', monospace; font-size: 12px;">${envio.telefono || '—'}</td>
+          <td style="padding: 8px 10px; font-size: 12px;">${envio.prod_1 || '—'}</td>
+          <td style="padding: 8px 10px;"><span class="status-badge ${envioEstadoClass}">${envioEstado}</span></td>
+        </tr>
+      `;
+    }).join('') || `<tr><td colspan="4" style="padding: 20px; text-align: center; color: var(--muted);">Sin envíos registrados</td></tr>`;
+
+    document.getElementById('detail-envios-count').textContent = envios.length;
+
+    content.style.display = 'flex';
+    loading.style.display = 'none';
+  } catch (err) {
+    errorDiv.textContent = `Error: ${err.message}`;
+    errorDiv.style.display = 'block';
+    loading.style.display = 'none';
+  }
+}
+
+function closeCampaignDetailModal() {
+  document.getElementById('campaign-detail-modal').style.display = 'none';
 }
 
 // Initialize

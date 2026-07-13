@@ -136,7 +136,7 @@ export function setupDatabaseHandlers() {
         }
       }
 
-      const { nombre, plantilla_meta, id_usuario, total_contactos, envios } = campaignData;
+      const { nombre, plantilla_meta, id_usuario, creado_por, total_contactos, envios } = campaignData;
 
       console.log('Creating campaign:', { nombre, plantilla_meta, id_usuario, total_contactos });
 
@@ -163,12 +163,13 @@ export function setupDatabaseHandlers() {
       for (const envio of envios) {
         const envioInsert = `
           INSERT INTO mssql_web.dbo.super_campanias_envios
-          (id_campania, nombre, telefono, prod_1, precio_1, oferta_1, prod_2, precio_2, oferta_2, prod_3, precio_3, oferta_3, link_catalogo, status, creado_por, created_at)
-          VALUES (@param1, @param2, @param3, @param4, @param5, @param6, @param7, @param8, @param9, @param10, @param11, @param12, @param13, 'pending', @param14, GETDATE());
+          (id_campania, id_cliente, nombre, telefono, prod_1, precio_1, oferta_1, prod_2, precio_2, oferta_2, prod_3, precio_3, oferta_3, link_catalogo, status, creado_por, created_at)
+          VALUES (@param1, @param2, @param3, @param4, @param5, @param6, @param7, @param8, @param9, @param10, @param11, @param12, @param13, @param14, 'pending', @param15, GETDATE());
         `;
 
         const params = [
           campaign_id,
+          envio.id_cliente || null,
           envio.nombre || null,
           envio.telefono || null,
           envio.prod_1 || null,
@@ -181,7 +182,7 @@ export function setupDatabaseHandlers() {
           envio.precio_3 || null,
           envio.oferta_3 || null,
           envio.link_catalogo || null,
-          id_usuario
+          creado_por || id_usuario
         ];
 
         await execute(envioInsert, params);
@@ -224,6 +225,46 @@ export function setupDatabaseHandlers() {
       };
     } catch (error) {
       console.error('db:get-campaigns error:', error);
+      return { success: false, error: (error as Error).message };
+    }
+  });
+
+  // Obtener detalle de una campaña + sus envíos
+  ipcMain.handle('db:get-campaign-detail', async (event, { id_campania }: { id_campania: number | string }) => {
+    try {
+      if (!isConnected()) {
+        const connected = await initConnection();
+        if (!connected) {
+          return { success: false, error: 'Database not connected' };
+        }
+      }
+
+      const campaignRows = await query<any>(
+        `SELECT id, id_usuario, nombre, plantilla_meta, total_contactos, estado, created_at as fecha_creacion
+         FROM mssql_web.dbo.super_campanias
+         WHERE id = @param1`,
+        [id_campania]
+      );
+
+      if (campaignRows.length === 0) {
+        return { success: false, error: 'Campaign not found' };
+      }
+
+      const envios = await query<any>(
+        `SELECT id, id_cliente, nombre, telefono, prod_1, precio_1, oferta_1, prod_2, precio_2, oferta_2, prod_3, precio_3, oferta_3, status
+         FROM mssql_web.dbo.super_campanias_envios
+         WHERE id_campania = @param1
+         ORDER BY id ASC`,
+        [id_campania]
+      );
+
+      return {
+        success: true,
+        campaign: campaignRows[0],
+        envios: envios || []
+      };
+    } catch (error) {
+      console.error('db:get-campaign-detail error:', error);
       return { success: false, error: (error as Error).message };
     }
   });
