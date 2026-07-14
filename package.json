@@ -1,6 +1,6 @@
 {
   "name": "club-uaa-campanas-electron",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "description": "Electron campaign manager for Club UAA",
   "main": "./dist/main/main.js",
   "homepage": "./",
@@ -13,11 +13,10 @@
     "build": "tsc -p . --skipLibCheck && vite build",
     "pack": "electron-builder --dir",
     "dist": "npm run build && electron-builder",
-    "rebuild": "electron-rebuild -f -w better-sqlite3"
+    "rebuild": "echo no native modules"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
-    "better-sqlite3": "^9.6.0",
     "electron-updater": "^6.8.9",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -25,8 +24,6 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
-    "@electron/rebuild": "^3.6.0",
-    "@types/better-sqlite3": "^7.6.11",
     "@types/node": "^20.14.11",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",

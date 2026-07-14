@@ -13,7 +13,7 @@ const DEFAULT_TEMPLATES_DB = path.join(
   '6 - Transformación Digital',
   'Herramientas Internas',
   'Campañas UAA',
-  'plantillas.db'
+  'plantillas.json'
 );
 
 interface AppConfig {

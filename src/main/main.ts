@@ -4,7 +4,7 @@ import { autoUpdater } from 'electron-updater';
 import { setupDatabaseHandlers } from './ipc/database';
 import { setupTemplateHandlers } from './ipc/templates';
 import { getTemplatesDbPath } from './lib/config';
-import { openTemplatesDb, closeTemplatesDb } from './lib/templates-db';
+import { openTemplatesDb, closeTemplatesDb } from './lib/templates-json';
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -105,8 +105,8 @@ ipcMain.handle('app:version', () => app.getVersion());
 
 ipcMain.handle('templates:open-file-dialog', async () => {
   const result = await dialog.showOpenDialog(mainWindow!, {
-    title: 'Seleccionar plantillas.db',
-    filters: [{ name: 'SQLite Database', extensions: ['db'] }],
+    title: 'Seleccionar plantillas.json',
+    filters: [{ name: 'Plantillas JSON', extensions: ['json'] }],
     properties: ['openFile'],
   });
   return result.canceled ? null : result.filePaths[0];
@@ -114,9 +114,9 @@ ipcMain.handle('templates:open-file-dialog', async () => {
 
 ipcMain.handle('templates:create-file-dialog', async () => {
   const result = await dialog.showSaveDialog(mainWindow!, {
-    title: 'Crear nueva plantillas.db',
-    defaultPath: 'plantillas.db',
-    filters: [{ name: 'SQLite Database', extensions: ['db'] }],
+    title: 'Crear nueva plantillas.json',
+    defaultPath: 'plantillas.json',
+    filters: [{ name: 'Plantillas JSON', extensions: ['json'] }],
   });
   return result.canceled ? null : result.filePath;
 });
