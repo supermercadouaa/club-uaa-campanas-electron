@@ -36,7 +36,11 @@ contextBridge.exposeInMainWorld('electron', {
     templatesOpenFileDialog: () => ipcRenderer.invoke('templates:open-file-dialog'),
     templatesCreateFileDialog: () => ipcRenderer.invoke('templates:create-file-dialog'),
     templatesGet: () => ipcRenderer.invoke('templates:get'),
+    templatesGetAll: () => ipcRenderer.invoke('templates:get-all'),
     templatesGetPath: () => ipcRenderer.invoke('templates:get-path'),
     templatesSetPath: (p: string) => ipcRenderer.invoke('templates:set-path', p),
+    templatesCreate: (input: any) => ipcRenderer.invoke('templates:create', input),
+    templatesUpdate: (id: string, input: any) => ipcRenderer.invoke('templates:update', id, input),
+    templatesDelete: (id: string) => ipcRenderer.invoke('templates:delete', id),
   },
 });
