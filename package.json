@@ -1,6 +1,6 @@
 {
   "name": "club-uaa-campanas-electron",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Electron campaign manager for Club UAA",
   "main": "./dist/main/main.js",
   "homepage": "./",
