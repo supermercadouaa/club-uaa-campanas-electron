@@ -257,6 +257,10 @@ table td { padding: 12px; font-size: 13px; }
           <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><rect x="3" y="3" width="14" height="14" rx="1.5"></rect><path d="M6.5 13V9.5M10 13V6.5M13.5 13v-4"></path></svg>
           Campañas enviadas
         </button>
+        <button onclick="switchMenu('plantillas')" id="menu-plantillas" class="menu-item" style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; cursor: pointer; font-size: 14px; transition: all .2s; width: 100%; text-align: left; font-family: 'DM Sans', sans-serif;">
+          <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><rect x="2" y="4" width="16" height="3" rx="1"></rect><rect x="2" y="9" width="10" height="3" rx="1"></rect><rect x="2" y="14" width="12" height="3" rx="1"></rect></svg>
+          Plantillas
+        </button>
       </nav>
 
       <div style="padding: 14px 16px; border-top: 1px solid var(--border); color: #AAAAAA; font-size: 11px; line-height: 1.6; margin-top: 14px;">
@@ -289,9 +293,13 @@ table td { padding: 12px; font-size: 13px; }
       </div>
       <div id="preview-section" style="display:none">
         <div class="stats-row" id="stats-row"></div>
-        <div class="actions-row">
-          <span style="font-size:12px;color:var(--muted)" id="col-status"></span>
-          <button class="btn btn-primary" onclick="goStep(1)">Diseñar mensaje →</button>
+        <div style="text-align:center; margin-top:16px;">
+          <span style="font-size:12px; color:var(--muted);" id="col-status"></span>
+        </div>
+        <div class="actions-row" style="margin-top:10px;">
+          <button class="btn btn-outline" onclick="discardCampaign()" style="flex:0 0 auto; padding:12px 20px; white-space:nowrap;">Descartar</button>
+          <div style="flex:1;"></div>
+          <button class="btn btn-primary" onclick="goStep(1)" style="flex:0 0 auto; padding:12px 20px; white-space:nowrap;">Diseñar mensaje →</button>
         </div>
       </div>
     </div>
@@ -455,7 +463,95 @@ table td { padding: 12px; font-size: 13px; }
           </div>
         </div>
       </div>
+
+      <!-- PLANTILLAS SECTION -->
+      <div id="menu-plantillas-section" style="display:none; padding: 16px 24px; overflow-y: auto; flex: 1; flex-direction: column;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+          <h2 style="font-size: 16px; font-weight: 700; color: #FFFFFF; margin: 0;">Gestión de plantillas</h2>
+          <button class="btn btn-primary" onclick="openTemplateModal()" style="padding: 8px 16px; font-size: 13px;">
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"></line><line x1="4" y1="10" x2="16" y2="10"></line></svg>
+            Nueva plantilla
+          </button>
+        </div>
+
+        <div style="flex: 1; display: flex; flex-direction: column; overflow: hidden;">
+          <div id="plantillas-count" style="font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 12px;">—</div>
+
+          <div id="plantillas-loading" style="flex:1; display:flex; align-items:center; justify-content:center; color: var(--muted);">Cargando...</div>
+
+          <div id="plantillas-empty" style="display:none; flex:1; align-items:center; justify-content:center; flex-direction:column; gap:12px; color: var(--muted);">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="4" rx="1"></rect><rect x="3" y="10" width="12" height="4" rx="1"></rect><rect x="3" y="16" width="14" height="4" rx="1"></rect></svg>
+            <div>No hay plantillas. Creá la primera.</div>
+          </div>
+
+          <div id="plantillas-container" style="display:none; flex:1; overflow:auto;">
+            <table style="width: 100%; border-collapse: collapse;">
+              <thead>
+                <tr style="border-bottom: 1px solid var(--border);">
+                  <th style="text-align:left; padding:10px; font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:.05em; width:48px;">ID</th>
+                  <th style="text-align:left; padding:10px; font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:.05em;">Nombre</th>
+                  <th style="text-align:left; padding:10px; font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:.05em;">ID Meta</th>
+                  <th style="text-align:left; padding:10px; font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:.05em;">Variables</th>
+                  <th style="text-align:center; padding:10px; font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:.05em;">Estado</th>
+                  <th style="text-align:center; padding:10px; font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:.05em;">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="plantillas-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
+</div>
+
+<!-- TEMPLATE MODAL -->
+<div id="template-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:3000; align-items:center; justify-content:center;">
+  <div class="login-box" style="position:relative; width:92%; max-width:600px; max-height:90vh; padding:28px; display:flex; flex-direction:column; overflow-y:auto;">
+    <button onclick="closeTemplateModal()" class="icon-btn" style="position:absolute; top:14px; right:14px; color:#999;" aria-label="Cerrar">
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="4" y1="4" x2="16" y2="16"></line><line x1="16" y1="4" x2="4" y2="16"></line></svg>
+    </button>
+
+    <div style="font-size: 16px; font-weight: 700; margin-bottom: 20px;" id="template-modal-title">Nueva plantilla</div>
+
+    <div id="template-modal-error" class="error-msg" style="display:none; margin-bottom: 12px;"></div>
+
+    <div style="display: grid; grid-template-columns: 1fr 60px; gap: 12px; margin-bottom: 16px;">
+      <div class="form-group" style="margin:0;">
+        <label class="form-label">Nombre</label>
+        <input type="text" id="tpl-name" class="form-input" placeholder="Ej: Ofertas Quincenales">
+      </div>
+      <div class="form-group" style="margin:0;">
+        <label class="form-label">Ícono</label>
+        <input type="text" id="tpl-icon" class="form-input" placeholder="🎁" maxlength="2" style="text-align:center; font-size:20px;">
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+      <div class="form-group" style="margin:0;">
+        <label class="form-label">Subtítulo <span style="font-weight:400; color:var(--muted);">(opcional)</span></label>
+        <input type="text" id="tpl-subtitle" class="form-input" placeholder="Ej: 3 Destacados">
+      </div>
+      <div class="form-group" style="margin:0;">
+        <label class="form-label">Plantilla Meta <span style="font-weight:400; color:var(--muted);">(opcional)</span></label>
+        <input type="text" id="tpl-meta" class="form-input" placeholder="Ej: super_ofertas">
+      </div>
+    </div>
+
+    <div class="form-group" style="margin-bottom: 12px;">
+      <label class="form-label">Variables disponibles <span style="font-weight:400; color:var(--muted); font-size:11px;">— clic para insertar en el texto</span></label>
+      <div id="tpl-chips-container" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
+    </div>
+
+    <div class="form-group" style="margin-bottom: 20px;">
+      <label class="form-label">Cuerpo del mensaje</label>
+      <textarea id="tpl-body" class="form-input" rows="9" oninput="onTplBodyChange()" style="resize: vertical; line-height: 1.7; font-family: 'DM Mono', monospace; font-size: 13px;" placeholder="Hola {{nombre}},&#10;&#10;Tu mensaje aquí..."></textarea>
+    </div>
+
+    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+      <button class="btn btn-outline" onclick="closeTemplateModal()" style="padding: 10px 20px;">Cancelar</button>
+      <button class="btn btn-primary" id="tpl-save-btn" onclick="saveTemplate()" style="padding: 10px 24px;">Guardar</button>
+    </div>
+  </div>
 </div>
 
 <!-- CAMPAIGN DETAIL MODAL -->
@@ -1067,7 +1163,14 @@ function renderVariablesForm() {
     return;
   }
 
-  container.innerHTML = template.variables.map(v => `
+  const editableVars = template.variables.filter(v => v !== 'nombre');
+
+  if (editableVars.length === 0) {
+    container.innerHTML = '<p style="grid-column: 1 / -1; color: var(--muted); font-size: 13px;">Esta plantilla no tiene variables</p>';
+    return;
+  }
+
+  container.innerHTML = editableVars.map(v => `
     <div>
       <label style="display: block; font-size: 11px; color: #AAAAAA; text-transform: uppercase; margin-bottom: 6px; font-weight: 600;">${v}</label>
       <input type="text"
@@ -1124,12 +1227,16 @@ function validateAndGoStep(n) {
   goStep(n);
 }
 
-function goStep(n) {
+async function goStep(n) {
   if (n > maxStep && n !== 0) {
     return;
   }
 
-  if (n === 1) { renderTemplates(); renderVariablesForm(); renderTemplatePreview(); }
+  if (n === 1) {
+    const fresh = await window.electron.api.templatesGet();
+    if (fresh && fresh.length > 0) TEMPLATES = fresh;
+    renderTemplates(); renderVariablesForm(); renderTemplatePreview();
+  }
   if (n === 2) { previewIdx = 0; renderPreviewMsg(); }
   if (n === 3) { updateCampaignStats(); }
 
@@ -1141,6 +1248,31 @@ function goStep(n) {
     if      (i === n)            t.classList.add('active');
     else if (i < n)              t.classList.add('done');
     else if (i > maxStep)        t.classList.add('locked');
+  });
+}
+
+function discardCampaign() {
+  if (!confirm('¿Descartár y empezar de cero?')) return;
+  rawData = [];
+  data = [];
+  columns = [];
+  selectedTemplate = null;
+  customVars = {};
+  maxStep = 0;
+  previewIdx = 0;
+
+  document.getElementById('preview-section').style.display = 'none';
+  document.getElementById('file-input').value = '';
+  const fileStatus = document.getElementById('file-status');
+  if (fileStatus) fileStatus.textContent = '';
+
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('step-0').classList.add('active');
+
+  document.querySelectorAll('.step-tab').forEach((t, i) => {
+    t.classList.remove('active','done','locked');
+    if (i === 0) t.classList.add('active');
+    else t.classList.add('locked');
   });
 }
 
@@ -1308,27 +1440,29 @@ let sidebarVisible = true;
 
 function switchMenu(menu) {
   if (menu === currentMenu) return;
-
   currentMenu = menu;
 
-  // Update menu buttons - remove active class from all, add to selected
   document.querySelectorAll('.menu-item').forEach(btn => btn.classList.remove('menu-item-active'));
   document.getElementById(`menu-${menu}`).classList.add('menu-item-active');
 
-  // Show/hide sections
   document.getElementById('steps-nav').style.display = menu === 'crear' ? 'flex' : 'none';
 
   const mainEl = document.querySelector('main.main');
   const enviadas = document.getElementById('menu-enviadas-section');
+  const plantillas = document.getElementById('menu-plantillas-section');
+
+  mainEl.style.display = 'none';
+  enviadas.style.display = 'none';
+  plantillas.style.display = 'none';
 
   if (menu === 'crear') {
     mainEl.style.display = '';
-    enviadas.style.display = 'none';
-  } else {
-    mainEl.style.display = 'none';
+  } else if (menu === 'enviadas') {
     enviadas.style.display = 'flex';
-    console.log('Loading campaigns for user:', currentUser?.id);
     loadCampaigns();
+  } else if (menu === 'plantillas') {
+    plantillas.style.display = 'flex';
+    loadPlantillas();
   }
 }
 
@@ -1518,6 +1652,187 @@ function closeCampaignDetailModal() {
 
 // Initialize
 initLoginScreen();
+
+// ============================================================================
+// TEMPLATE MANAGER
+// ============================================================================
+let tplEditingId = null;
+
+const FIXED_VARS = ['nombre','prod_1','precio_1','oferta_1','prod_2','precio_2','oferta_2','prod_3','precio_3','oferta_3','link_catalogo'];
+
+function detectVarsFromBody(body) {
+  return FIXED_VARS.filter(v => body.includes(`{{${v}}}`));
+}
+
+async function loadPlantillas() {
+  const loading = document.getElementById('plantillas-loading');
+  const empty = document.getElementById('plantillas-empty');
+  const container = document.getElementById('plantillas-container');
+  const tbody = document.getElementById('plantillas-tbody');
+  const countEl = document.getElementById('plantillas-count');
+
+  loading.style.display = 'flex';
+  empty.style.display = 'none';
+  container.style.display = 'none';
+
+  const rows = await window.electron.api.templatesGetAll();
+
+  loading.style.display = 'none';
+
+  if (!rows || rows.length === 0) {
+    empty.style.display = 'flex';
+    countEl.textContent = '0 plantillas';
+    return;
+  }
+
+  countEl.textContent = `${rows.length} plantilla${rows.length !== 1 ? 's' : ''}`;
+  container.style.display = 'block';
+
+  const TD = 'padding:8px 12px; font-size:13px;';
+  tbody.innerHTML = rows.map(t => {
+    const safeName = t.name.replace(/'/g, "\\'");
+    const vars = (t.variables || []).slice(0, 5).map(v =>
+      `<span style="font-size:10px; background:rgba(90,62,127,.4); border:1px solid var(--border2); border-radius:3px; padding:1px 5px; font-family:'DM Mono',monospace; white-space:nowrap;">${v}</span>`
+    ).join(' ') + ((t.variables || []).length > 5 ? ` <span style="font-size:11px;color:var(--muted);">+${t.variables.length - 5}</span>` : '');
+
+    return `<tr style="border-bottom:1px solid var(--border); opacity:${t.activo ? 1 : 0.5}; transition:background .15s;" onmouseover="this.style.background='rgba(54,1,95,.25)'" onmouseout="this.style.background=''">
+      <td style="${TD} color:var(--muted); font-family:'DM Mono',monospace;">${t.num_id}</td>
+      <td style="${TD} font-weight:600; color:#FFF;">${t.name}</td>
+      <td style="${TD} color:var(--muted); font-family:'DM Mono',monospace; font-size:12px;">${t.plantilla_meta || '—'}</td>
+      <td style="${TD}"><div style="display:flex; flex-wrap:wrap; gap:3px;">${vars || '<span style="color:var(--muted);">—</span>'}</div></td>
+      <td style="${TD} text-align:center;"><span class="status-badge ${t.activo ? 'sent' : 'default'}">${t.activo ? 'Activa' : 'Inactiva'}</span></td>
+      <td style="${TD} text-align:center;">
+        <div style="display:flex; gap:6px; justify-content:center;">
+          <button onclick="openTemplateModal('${t.id}')" class="btn btn-outline" style="padding:5px 12px; font-size:12px;">Editar</button>
+          <button onclick="confirmDeleteTemplate('${t.id}','${safeName}')" class="btn" style="padding:5px 10px; font-size:12px; background:rgba(255,68,68,.1); border:1px solid rgba(255,68,68,.2); color:var(--danger);">
+            <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="3 6 5 6 17 6"></polyline><path d="M16 6l-1 11.5a1.5 1.5 0 0 1-1.5 1.5H6.5A1.5 1.5 0 0 1 5 17.5L4 6"></path><path d="M8 6V4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2"></path></svg>
+          </button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+async function openTemplateModal(id = null) {
+  tplEditingId = id;
+  const modal = document.getElementById('template-modal');
+  const title = document.getElementById('template-modal-title');
+  const errorDiv = document.getElementById('template-modal-error');
+
+  errorDiv.style.display = 'none';
+  renderVarChips();
+
+  if (id) {
+    title.textContent = 'Editar plantilla';
+    const rows = await window.electron.api.templatesGetAll();
+    const t = rows.find(r => r.id === id);
+    if (!t) return;
+    document.getElementById('tpl-name').value = t.name;
+    document.getElementById('tpl-icon').value = t.icon || '🎁';
+    document.getElementById('tpl-subtitle').value = t.subtitle || '';
+    document.getElementById('tpl-meta').value = t.plantilla_meta || '';
+    document.getElementById('tpl-body').value = t.body;
+    onTplBodyChange();
+  } else {
+    title.textContent = 'Nueva plantilla';
+    document.getElementById('tpl-name').value = '';
+    document.getElementById('tpl-icon').value = '🎁';
+    document.getElementById('tpl-subtitle').value = '';
+    document.getElementById('tpl-meta').value = '';
+    document.getElementById('tpl-body').value = '';
+    onTplBodyChange();
+  }
+
+  modal.style.display = 'flex';
+  setTimeout(() => document.getElementById('tpl-name').focus(), 50);
+}
+
+function closeTemplateModal() {
+  document.getElementById('template-modal').style.display = 'none';
+  tplEditingId = null;
+}
+
+function renderVarChips() {
+  const container = document.getElementById('tpl-chips-container');
+  if (!container) return;
+  container.innerHTML = FIXED_VARS.map(v =>
+    `<button type="button" id="tpl-chip-${v}" onclick="insertVar('${v}')"
+      style="font-size:11px; font-family:'DM Mono',monospace; padding:4px 10px; border-radius:4px; cursor:pointer; border:1px solid var(--border2); background:rgba(90,62,127,.3); color:var(--muted); transition:all .15s;">{{${v}}}</button>`
+  ).join('');
+}
+
+function insertVar(v) {
+  const ta = document.getElementById('tpl-body');
+  const start = ta.selectionStart;
+  const end = ta.selectionEnd;
+  const ins = `{{${v}}}`;
+  ta.value = ta.value.slice(0, start) + ins + ta.value.slice(end);
+  ta.selectionStart = ta.selectionEnd = start + ins.length;
+  ta.focus();
+  onTplBodyChange();
+}
+
+function onTplBodyChange() {
+  const body = document.getElementById('tpl-body').value;
+  FIXED_VARS.forEach(v => {
+    const chip = document.getElementById(`tpl-chip-${v}`);
+    if (!chip) return;
+    const used = body.includes(`{{${v}}}`);
+    chip.style.background = used ? 'rgba(37,211,102,.15)' : 'rgba(90,62,127,.3)';
+    chip.style.borderColor = used ? 'var(--wa)' : 'var(--border2)';
+    chip.style.color = used ? 'var(--wa)' : 'var(--muted)';
+  });
+}
+
+async function saveTemplate() {
+  const errorDiv = document.getElementById('template-modal-error');
+  const saveBtn = document.getElementById('tpl-save-btn');
+
+  const name = document.getElementById('tpl-name').value.trim();
+  const icon = document.getElementById('tpl-icon').value.trim() || '🎁';
+  const subtitle = document.getElementById('tpl-subtitle').value.trim();
+  const plantilla_meta = document.getElementById('tpl-meta').value.trim();
+  const body = document.getElementById('tpl-body').value.trim();
+  const variables = detectVarsFromBody(body);
+
+  errorDiv.style.display = 'none';
+
+  if (!name) { errorDiv.textContent = 'El nombre es obligatorio.'; errorDiv.style.display = 'block'; return; }
+  if (!body) { errorDiv.textContent = 'El cuerpo del mensaje es obligatorio.'; errorDiv.style.display = 'block'; return; }
+
+  saveBtn.disabled = true;
+  saveBtn.textContent = 'Guardando...';
+
+  try {
+    let result;
+    if (tplEditingId) {
+      result = await window.electron.api.templatesUpdate(tplEditingId, { name, icon, subtitle, plantilla_meta, body, variables });
+    } else {
+      result = await window.electron.api.templatesCreate({ name, icon, subtitle, plantilla_meta, body, variables });
+    }
+
+    if (result.success) {
+      closeTemplateModal();
+      loadPlantillas();
+    } else {
+      errorDiv.textContent = result.error || 'Error desconocido.';
+      errorDiv.style.display = 'block';
+    }
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Guardar';
+  }
+}
+
+async function confirmDeleteTemplate(id, name) {
+  if (!confirm(`¿Eliminar la plantilla "${name}"? Esta acción no se puede deshacer.`)) return;
+  const result = await window.electron.api.templatesDelete(id);
+  if (result.success) {
+    loadPlantillas();
+  } else {
+    alert('Error al eliminar: ' + (result.error || 'desconocido'));
+  }
+}
 </script>
 
 </body>
