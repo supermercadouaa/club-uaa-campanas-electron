@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, dialog } from 'electron';
 import path from 'path';
 import { autoUpdater } from 'electron-updater';
 import { setupDatabaseHandlers } from './ipc/database';
@@ -102,6 +102,24 @@ ipcMain.handle('update:install', () => {
 });
 
 ipcMain.handle('app:version', () => app.getVersion());
+
+ipcMain.handle('templates:open-file-dialog', async () => {
+  const result = await dialog.showOpenDialog(mainWindow!, {
+    title: 'Seleccionar plantillas.db',
+    filters: [{ name: 'SQLite Database', extensions: ['db'] }],
+    properties: ['openFile'],
+  });
+  return result.canceled ? null : result.filePaths[0];
+});
+
+ipcMain.handle('templates:create-file-dialog', async () => {
+  const result = await dialog.showSaveDialog(mainWindow!, {
+    title: 'Crear nueva plantillas.db',
+    defaultPath: 'plantillas.db',
+    filters: [{ name: 'SQLite Database', extensions: ['db'] }],
+  });
+  return result.canceled ? null : result.filePath;
+});
 
 // IPC Handlers (Phase 2+)
 ipcMain.handle('campaign:create', async (event, data) => {

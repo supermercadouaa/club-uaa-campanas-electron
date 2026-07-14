@@ -33,6 +33,8 @@ contextBridge.exposeInMainWorld('electron', {
     dbGetCampaigns: (data: any) => ipcRenderer.invoke('db:get-campaigns', data),
     dbGetCampaignDetail: (data: any) => ipcRenderer.invoke('db:get-campaign-detail', data),
     dbClose: () => ipcRenderer.invoke('db:close'),
+    templatesOpenFileDialog: () => ipcRenderer.invoke('templates:open-file-dialog'),
+    templatesCreateFileDialog: () => ipcRenderer.invoke('templates:create-file-dialog'),
     templatesGet: () => ipcRenderer.invoke('templates:get'),
     templatesGetPath: () => ipcRenderer.invoke('templates:get-path'),
     templatesSetPath: (p: string) => ipcRenderer.invoke('templates:set-path', p),
