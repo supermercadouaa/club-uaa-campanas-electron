@@ -201,8 +201,8 @@ export function setupDatabaseHandlers() {
     }
   });
 
-  // Obtener campañas del usuario
-  ipcMain.handle('db:get-campaigns', async (event, { id_usuario }: { id_usuario: string }) => {
+  // Obtener todas las campañas (todos los usuarios)
+  ipcMain.handle('db:get-campaigns', async () => {
     try {
       if (!isConnected()) {
         const connected = await initConnection();
@@ -212,11 +212,15 @@ export function setupDatabaseHandlers() {
       }
 
       const campaigns = await query<any>(
-        `SELECT id, id_usuario, nombre, plantilla_meta, total_contactos, estado, created_at as fecha_creacion
-         FROM mssql_web.dbo.super_campanias
-         WHERE id_usuario = @param1
-         ORDER BY created_at DESC`,
-        [id_usuario]
+        `SELECT c.id, c.id_usuario, c.nombre, c.plantilla_meta, c.total_contactos,
+                c.created_at as fecha_creacion,
+                u.nombre as usuario_nombre, u.email as usuario_email,
+                (SELECT COUNT(*) FROM mssql_web.dbo.super_campanias_envios e
+                 WHERE e.id_campania = c.id AND e.fh_enviometa IS NOT NULL) as enviados
+         FROM mssql_web.dbo.super_campanias c
+         LEFT JOIN mssql_web.dbo.super_usuarios u ON c.id_usuario = u.id
+         ORDER BY c.created_at DESC`,
+        []
       );
 
       return {
@@ -240,9 +244,14 @@ export function setupDatabaseHandlers() {
       }
 
       const campaignRows = await query<any>(
-        `SELECT id, id_usuario, nombre, plantilla_meta, total_contactos, estado, created_at as fecha_creacion
-         FROM mssql_web.dbo.super_campanias
-         WHERE id = @param1`,
+        `SELECT c.id, c.id_usuario, c.nombre, c.plantilla_meta, c.total_contactos,
+                c.created_at as fecha_creacion,
+                u.nombre as usuario_nombre, u.email as usuario_email,
+                (SELECT COUNT(*) FROM mssql_web.dbo.super_campanias_envios e
+                 WHERE e.id_campania = c.id AND e.fh_enviometa IS NOT NULL) as enviados
+         FROM mssql_web.dbo.super_campanias c
+         LEFT JOIN mssql_web.dbo.super_usuarios u ON c.id_usuario = u.id
+         WHERE c.id = @param1`,
         [id_campania]
       );
 
@@ -251,7 +260,7 @@ export function setupDatabaseHandlers() {
       }
 
       const envios = await query<any>(
-        `SELECT id, id_cliente, nombre, telefono, prod_1, precio_1, oferta_1, prod_2, precio_2, oferta_2, prod_3, precio_3, oferta_3, status
+        `SELECT id, id_cliente, nombre, telefono, fh_enviometa
          FROM mssql_web.dbo.super_campanias_envios
          WHERE id_campania = @param1
          ORDER BY id ASC`,

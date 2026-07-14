@@ -10,7 +10,7 @@ echo ========================================
 echo.
 
 echo [1/2] Compiling TypeScript...
-"%NODE_EXE%" node_modules\typescript\bin\tsc --outDir dist --module commonjs
+"%NODE_EXE%" node_modules\typescript\bin\tsc -p . --skipLibCheck
 if errorlevel 1 (
   echo ERROR: TypeScript compilation failed!
   exit /b 1
